@@ -1,0 +1,96 @@
+package ru.yandex.practicum.filmorate.model;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.validation.method.OnCreate;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class FilmValidationTest {
+
+    private static Validator validator;
+
+    @BeforeAll
+    static void setupValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
+    @Test
+    @DisplayName("Валидация должна пройти при корректных данных")
+    void shouldValidateCorrectFilm() {
+        Film film = new Film();
+        film.setName("Матрица");
+        film.setDescription("Фильм о симуляции реальности");
+        film.setReleaseDate(LocalDate.of(1999, 3, 31));
+        film.setDuration(Duration.ofMinutes(136));
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
+
+        assertTrue(violations.isEmpty(), "Ожидалось отсутствие ошибок валидации");
+    }
+
+    @Test
+    @DisplayName("Пустой фильм должен вызвать ошибки валидации")
+    void shouldFailOnEmptyFilm() {
+        Film film = new Film();
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(4, violations.size(), "Ожидалось 4 ошибки: name, description, releaseDate, duration");
+    }
+
+    @Test
+    @DisplayName("Описание длиннее 200 символов — ошибка")
+    void shouldFailIfDescriptionTooLong() {
+        Film film = new Film();
+        film.setName("Длинный фильм");
+        film.setDescription("A".repeat(201));
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(Duration.ofMinutes(100));
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("200 символов")));
+    }
+
+    @Test
+    @DisplayName("Дата релиза раньше 28.12.1895 — ошибка")
+    void shouldFailIfReleaseDateTooEarly() {
+        Film film = new Film();
+        film.setName("Исторический фильм");
+        film.setDescription("О старом кино");
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
+        film.setDuration(Duration.ofMinutes(50));
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("1895")));
+    }
+
+    @Test
+    @DisplayName("Нулевая или отрицательная продолжительность — ошибка")
+    void shouldFailIfDurationNotPositive() {
+        Film film = new Film();
+        film.setName("Короткий фильм");
+        film.setDescription("Тест продолжительности");
+        film.setReleaseDate(LocalDate.of(2020, 1, 1));
+        film.setDuration(Duration.ZERO);
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Продолжительность фильма")));
+    }
+}
