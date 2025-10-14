@@ -46,26 +46,13 @@ public class UserController {
         log.info("Получен запрос на обновление пользователя с id={}", newUser.getId());
 
         User oldUser = users.get(newUser.getId());
-        if (oldUser == null) {
-            log.warn("Ошибка обновления: пользователь с id={} не найден", newUser.getId());
-            throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
-        }
 
-        if (newUser.getEmail() != null && !newUser.getEmail().isBlank()) {
-            oldUser.setEmail(newUser.getEmail());
-        }
+        log.warn("Ошибка обновления: пользователь с id={} не найден", newUser.getId());
 
-        if (newUser.getLogin() != null && !newUser.getLogin().isBlank()) {
-            oldUser.setLogin(newUser.getLogin());
-        }
-
-        if (newUser.getName() != null && !newUser.getName().isBlank()) {
-            oldUser.setName(newUser.getName());
-        }
-
-        if (newUser.getBirthday() != null) {
-            oldUser.setBirthday(newUser.getBirthday());
-        }
+        oldUser.setEmail(newUser.getEmail());
+        oldUser.setLogin(newUser.getLogin());
+        oldUser.setName(newUser.getName());
+        oldUser.setBirthday(newUser.getBirthday());
 
         log.info("Пользователь id={} успешно обновлён", newUser.getId());
 

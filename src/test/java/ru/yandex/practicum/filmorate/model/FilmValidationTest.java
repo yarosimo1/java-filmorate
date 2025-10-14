@@ -15,19 +15,19 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FilmValidationTest {
+public class FilmValidationTest {
 
     private static Validator validator;
 
     @BeforeAll
-    static void setupValidator() {
+    public static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
     @Test
     @DisplayName("Валидация должна пройти при корректных данных")
-    void shouldValidateCorrectFilm() {
+    public void shouldValidateCorrectFilm() {
         Film film = new Film();
         film.setName("Матрица");
         film.setDescription("Фильм о симуляции реальности");
@@ -41,7 +41,7 @@ class FilmValidationTest {
 
     @Test
     @DisplayName("Пустой фильм должен вызвать ошибки валидации")
-    void shouldFailOnEmptyFilm() {
+    public void shouldFailOnEmptyFilm() {
         Film film = new Film();
         Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
 
@@ -51,7 +51,7 @@ class FilmValidationTest {
 
     @Test
     @DisplayName("Описание длиннее 200 символов — ошибка")
-    void shouldFailIfDescriptionTooLong() {
+    public void shouldFailIfDescriptionTooLong() {
         Film film = new Film();
         film.setName("Длинный фильм");
         film.setDescription("A".repeat(201));
@@ -66,7 +66,7 @@ class FilmValidationTest {
 
     @Test
     @DisplayName("Дата релиза раньше 28.12.1895 — ошибка")
-    void shouldFailIfReleaseDateTooEarly() {
+    public void shouldFailIfReleaseDateTooEarly() {
         Film film = new Film();
         film.setName("Исторический фильм");
         film.setDescription("О старом кино");
@@ -81,7 +81,7 @@ class FilmValidationTest {
 
     @Test
     @DisplayName("Нулевая или отрицательная продолжительность — ошибка")
-    void shouldFailIfDurationNotPositive() {
+    public void shouldFailIfDurationNotPositive() {
         Film film = new Film();
         film.setName("Короткий фильм");
         film.setDescription("Тест продолжительности");

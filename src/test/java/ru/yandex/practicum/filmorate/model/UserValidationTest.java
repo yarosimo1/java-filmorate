@@ -14,19 +14,19 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserValidationTest {
+public class UserValidationTest {
 
     private static Validator validator;
 
     @BeforeAll
-    static void setupValidator() {
+    public static void setupValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
     @Test
     @DisplayName("Корректный пользователь проходит валидацию")
-    void shouldValidateCorrectUser() {
+    public void shouldValidateCorrectUser() {
         User user = new User();
         user.setEmail("user@mail.ru");
         user.setLogin("login");
@@ -40,7 +40,7 @@ class UserValidationTest {
 
     @Test
     @DisplayName("Пустой пользователь — ошибки по всем обязательным полям")
-    void shouldFailOnEmptyUser() {
+    public void shouldFailOnEmptyUser() {
         User user = new User();
         Set<ConstraintViolation<User>> violations = validator.validate(user, OnCreate.class);
 
@@ -52,7 +52,7 @@ class UserValidationTest {
 
     @Test
     @DisplayName("Email без @ — ошибка")
-    void shouldFailIfEmailInvalid() {
+    public void shouldFailIfEmailInvalid() {
         User user = new User();
         user.setEmail("invalid.email");
         user.setLogin("user");
@@ -66,7 +66,7 @@ class UserValidationTest {
 
     @Test
     @DisplayName("Логин с пробелами — ошибка")
-    void shouldFailIfLoginContainsSpaces() {
+    public void shouldFailIfLoginContainsSpaces() {
         User user = new User();
         user.setEmail("user@mail.ru");
         user.setLogin("user name");
@@ -80,7 +80,7 @@ class UserValidationTest {
 
     @Test
     @DisplayName("Дата рождения в будущем — ошибка")
-    void shouldFailIfBirthdayInFuture() {
+    public void shouldFailIfBirthdayInFuture() {
         User user = new User();
         user.setEmail("user@mail.ru");
         user.setLogin("user");

@@ -47,26 +47,14 @@ public class FilmController {
         log.info("Получен запрос на обновление пользователя с id={}", newFilm.getId());
 
         Film oldFilm = films.get(newFilm.getId());
-        if (oldFilm == null) {
-            log.warn("Ошибка обновления: фильма с id={} не найден", newFilm.getId());
-            throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
-        }
 
-        if (newFilm.getName() != null && !newFilm.getName().isBlank()) {
-            oldFilm.setName(newFilm.getName());
-        }
+        log.warn("Ошибка обновления: фильма с id={} не найден", newFilm.getId());
 
-        if (newFilm.getDescription() != null && !newFilm.getDescription().isBlank()) {
-            oldFilm.setDescription(newFilm.getDescription());
-        }
+        oldFilm.setName(newFilm.getName());
+        oldFilm.setDescription(newFilm.getDescription());
+        oldFilm.setReleaseDate(newFilm.getReleaseDate());
+        oldFilm.setDuration(newFilm.getDuration());
 
-        if (newFilm.getReleaseDate() != null) {
-            oldFilm.setReleaseDate(newFilm.getReleaseDate());
-        }
-
-        if (newFilm.getDuration() != null && !newFilm.getDuration().isZero()) {
-            oldFilm.setDuration(newFilm.getDuration());
-        }
 
         log.info("Пользователь id={} успешно обновлён", newFilm.getId());
 
