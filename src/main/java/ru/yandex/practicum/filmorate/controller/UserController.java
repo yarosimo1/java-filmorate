@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceprion.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 import ru.yandex.practicum.filmorate.model.User;
