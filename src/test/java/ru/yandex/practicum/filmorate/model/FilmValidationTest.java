@@ -46,7 +46,7 @@ public class FilmValidationTest {
         Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
 
         assertFalse(violations.isEmpty());
-        assertEquals(4, violations.size(), "Ожидалось 4 ошибки: name, description, releaseDate, duration");
+        assertEquals(6, violations.size(), "Ожидалось 6 ошибок");
     }
 
     @Test
