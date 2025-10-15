@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
     private static final Instant MIN_DATE_RELEAS_FILM = LocalDate.of(1895, 12, 28)
                                                                     .atStartOfDay()
                                                                     .toInstant(ZoneOffset.UTC);
