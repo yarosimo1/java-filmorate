@@ -6,6 +6,8 @@ import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -29,5 +31,15 @@ public class User {
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Дата рождения обязательна")
     @PastOrPresent(groups = {OnCreate.class, OnUpdate.class}, message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
+
+    private Set<Long> friends = new HashSet<>();
+
+    public boolean addFriend(Long id) {
+        return friends.add(id);
+    }
+
+    public boolean deleteFriend(Long id) {
+        return friends.remove(id);
+    }
 }
 
