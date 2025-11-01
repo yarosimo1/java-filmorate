@@ -92,7 +92,7 @@ public class UserService {
                              Long friendId) {
         log.info("Получен запрос на добавление в друзья пользователя friendId={}",friendId);
 
-        if ((userId == null || userId < 0) || (friendId == null || friendId < 0) ) {
+        if ((userId == null || userId < 0) || (friendId == null || friendId < 0)) {
             log.warn("Ошибка добавления в друзья: неверно указан id");
             throw new ValidationException("Ошибка валидации id пользователей");
         }
@@ -115,7 +115,7 @@ public class UserService {
                                 Long friendId) {
         log.info("Получен запрос на удаление из друзей пользователя friendId={}",friendId);
 
-        if ((userId == null || userId < 0) || (friendId == null || friendId < 0) ) {
+        if ((userId == null || userId < 0) || (friendId == null || friendId < 0)) {
             log.warn("Ошибка уделения из друзей: неверно указан id");
             throw new ValidationException("Ошибка валидации пользователей");
         }

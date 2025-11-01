@@ -81,7 +81,7 @@ public class FilmService {
                            Long userId) {
         log.info("Получен запрос на добавления лайка для фильм с id={} от пользователя с id={}",filmId, userId);
 
-        if ((userId == null || userId < 0) || (filmId == null || filmId < 0) ) {
+        if ((userId == null || userId < 0) || (filmId == null || filmId < 0)) {
             log.warn("Ошибка добавления лайка: неверно указан id");
             throw new ValidationException("Ошибка валидации id лайков");
         }
@@ -103,7 +103,7 @@ public class FilmService {
                               Long userId) {
         log.info("Получен запрос на удаление лайка для фильм с id={} от пользователя с id={}",filmId, userId);
 
-        if ((userId == null || userId < 0) || (filmId == null || filmId < 0) ) {
+        if ((userId == null || userId < 0) || (filmId == null || filmId < 0)) {
             log.warn("Ошибка удаления лайка: неверно указан id");
             throw new ValidationException("Ошибка валидации id лайков");
         }
