@@ -47,7 +47,7 @@ public class Film {
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
 
-    private Set<Long> whoLikes = new HashSet<>();
+    private final Set<Long> whoLikes = new HashSet<>();
 
     public boolean addLike(@NotNull @Positive Long id) {
         return whoLikes.add(id);

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
@@ -14,12 +15,12 @@ import java.util.NoSuchElementException;
 @Slf4j
 @Service
 public class FilmService {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final FilmStorage inMemoryFilmStorage;
+    private final UserService userService;
 
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage, InMemoryUserStorage inMemoryUserStorage) {
+    public FilmService(InMemoryFilmStorage inMemoryFilmStorage, UserService userService) {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
-        this.inMemoryUserStorage = inMemoryUserStorage;
+        this.userService = userService;
     }
 
     public Collection<Film> getFilms() {
@@ -86,7 +87,7 @@ public class FilmService {
             throw new ValidationException("Ошибка валидации id лайков");
         }
 
-        if (!inMemoryUserStorage.getUsers().containsKey(userId) ||
+        if (!userService.getInMemoryUserStorage().getUsers().containsKey(userId) ||
                 !inMemoryFilmStorage.getFilms().containsKey(filmId)) {
             log.warn("Ошибка добавления лайков: пользователем userId={} фильму filmId={}",userId, filmId);
             throw new NoSuchElementException("Лайк не может быть добавлен");
@@ -108,7 +109,7 @@ public class FilmService {
             throw new ValidationException("Ошибка валидации id лайков");
         }
 
-        if (!inMemoryUserStorage.getUsers().containsKey(userId) ||
+        if (!userService.getInMemoryUserStorage().getUsers().containsKey(userId) ||
                 !inMemoryFilmStorage.getFilms().containsKey(filmId)) {
             log.warn("Ошибка удаления лайков: пользователем userId={} фильму filmId={}",userId, filmId);
             throw new NoSuchElementException("Лайк не может быть удален");
@@ -124,12 +125,10 @@ public class FilmService {
     public List<Film> getPopularFilms(int count) {
         log.info("Получен запрос на получение популярных фильмов");
 
-        int limit = (count == 0) ? 10 : count;
-
         return inMemoryFilmStorage.getFilms().values()
                     .stream()
                     .sorted((f1, f2) -> Integer.compare(f2.getWhoLikes().size(), f1.getWhoLikes().size()))
-                    .limit(limit)
+                    .limit(count)
                     .toList();
     }
 }
