@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.PositiveDuration;
@@ -15,6 +16,8 @@ import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -43,5 +46,15 @@ public class Film {
     @JsonSerialize(using = DurationToSecondsSerializer.class)
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
+
+    private final Set<Long> whoLikes = new HashSet<>();
+
+    public boolean addLike(@NotNull @Positive Long id) {
+        return whoLikes.add(id);
+    }
+
+    public boolean deleteLike(@NotNull @Positive Long id) {
+        return whoLikes.remove(id);
+    }
 }
 
