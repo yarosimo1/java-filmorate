@@ -44,7 +44,6 @@ public class Film {
     @JsonSerialize(using = DurationToSecondsSerializer.class)
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
-    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Возрастной рейтинг фильма обязателен")
     private Long ratingId;
 
     public boolean addLike(@NotNull @Positive Long id) {
