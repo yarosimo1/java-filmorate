@@ -44,9 +44,9 @@ public class UserService {
         }
 
         log.info("Добавлен новый пользователь: id={}, email={}, login={}",
-                                                        createdUser.getId(),
-                                                        createdUser.getEmail(),
-                                                        createdUser.getLogin());
+                createdUser.getId(),
+                createdUser.getEmail(),
+                createdUser.getLogin());
 
         return createdUser;
     }
@@ -91,48 +91,46 @@ public class UserService {
         return deletedUser;
     }
 
-    public User addFriend(Long userId,
-                             Long friendId) {
-        log.info("Получен запрос на добавление в друзья пользователя friendId={}",friendId);
+    public User addFriend(Long userId, Long friendId) {
+        log.info("Получен запрос на добавление в друзья пользователя friendId={}", friendId);
 
         if ((userId == null || userId < 0) || (friendId == null || friendId < 0)) {
             log.warn("Ошибка добавления в друзья: неверно указан id");
             throw new ValidationException("Ошибка валидации id пользователей");
         }
 
-        if (!inMemoryUserStorage.getUsers().containsKey(userId) ||
-                !inMemoryUserStorage.getUsers().containsKey(friendId)) {
-            log.warn("Ошибка добавления в друзья: пользователем userId={} друга friendId={}",userId, friendId);
+        if (!inMemoryUserStorage.getUsers().containsKey(userId)
+                || !inMemoryUserStorage.getUsers().containsKey(friendId)) {
+            log.warn("Ошибка добавления в друзья: пользователем userId={} друга friendId={}", userId, friendId);
             throw new NoSuchElementException("Друг не может быть добавлен — пользователь не найден");
         }
 
         inMemoryUserStorage.getUsers().get(userId).addFriend(friendId);
         inMemoryUserStorage.getUsers().get(friendId).addFriend(userId);
 
-        log.info("Друг добавлен friendId={} пользователем userId={}",friendId, userId);
+        log.info("Друг добавлен friendId={} пользователем userId={}", friendId, userId);
 
         return inMemoryUserStorage.getUsers().get(userId);
     }
 
-    public User deleteFriend(Long userId,
-                                Long friendId) {
-        log.info("Получен запрос на удаление из друзей пользователя friendId={}",friendId);
+    public User deleteFriend(Long userId, Long friendId) {
+        log.info("Получен запрос на удаление из друзей пользователя friendId={}", friendId);
 
         if ((userId == null || userId < 0) || (friendId == null || friendId < 0)) {
             log.warn("Ошибка уделения из друзей: неверно указан id");
             throw new ValidationException("Ошибка валидации пользователей");
         }
 
-        if (!inMemoryUserStorage.getUsers().containsKey(userId) ||
-                !inMemoryUserStorage.getUsers().containsKey(friendId)) {
-            log.warn("Ошибка удаления из друзей: пользователем userId={} друга friendId={}",userId, friendId);
+        if (!inMemoryUserStorage.getUsers().containsKey(userId)
+                || !inMemoryUserStorage.getUsers().containsKey(friendId)) {
+            log.warn("Ошибка удаления из друзей: пользователем userId={} друга friendId={}", userId, friendId);
             throw new NoSuchElementException("Друг не может быть удален");
         }
 
         inMemoryUserStorage.getUsers().get(userId).deleteFriend(friendId);
         inMemoryUserStorage.getUsers().get(friendId).deleteFriend(userId);
 
-        log.info("Друг удален friendId={} пользователем userId={}",friendId, userId);
+        log.info("Друг удален friendId={} пользователем userId={}", friendId, userId);
 
         return inMemoryUserStorage.getUsers().get(userId);
     }
@@ -152,23 +150,19 @@ public class UserService {
 
         User user = inMemoryUserStorage.getUsers().get(userId);
 
-        return user.getFriends().stream()
+        return user.getFriendships().stream()
                 .map(id -> inMemoryUserStorage.getUsers().get(id))
-                .filter(Objects::nonNull)
-                .toList();
+                .filter(Objects::nonNull).toList();
     }
 
-    public List<User> getCommonFriends(Long userId,
-                                       Long otherId) {
+    public List<User> getCommonFriends(Long userId, Long otherId) {
         log.info("Получен запрос на получение списка общих друзей");
 
-        List<User> mutualFriends = inMemoryUserStorage.getUsers().get(userId)
-                .getFriends()
-                .stream()
-                .filter(inMemoryUserStorage.getUsers().get(otherId).getFriends()::contains)
+        List<User> mutualFriends = inMemoryUserStorage.getUsers().get(userId).getFriendships().stream()
+                .filter(inMemoryUserStorage.getUsers().get(otherId).getFriendships()::contains)
                 .map(id -> inMemoryUserStorage.getUsers().get(id))
                 .toList();
 
         return mutualFriends;
     }
- }
+}

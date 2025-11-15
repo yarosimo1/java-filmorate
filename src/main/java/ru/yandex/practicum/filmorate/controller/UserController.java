@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,25 +40,22 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
-    public User addFriend(@PathVariable("userId") Long userId,
-                             @PathVariable("friendId") Long friendId) {
+    public User addFriend(@PathVariable("userId") Long userId, @PathVariable("friendId") Long friendId) {
         return userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
-    public User deleteFriend(@PathVariable("userId") Long userId,
-                                   @PathVariable("friendId") Long friendId) {
+    public User deleteFriend(@PathVariable("userId") Long userId, @PathVariable("friendId") Long friendId) {
         return userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{userId}/friends")
     public List<User> getUserFriends(@PathVariable("userId") Long userId) {
-        return  userService.getFriends(userId);
+        return userService.getFriends(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable("userId") Long userid,
-                                       @PathVariable("otherId") Long otherId) {
+    public List<User> getCommonFriends(@PathVariable("userId") Long userid, @PathVariable("otherId") Long otherId) {
         return userService.getCommonFriends(userid, otherId);
     }
 }
