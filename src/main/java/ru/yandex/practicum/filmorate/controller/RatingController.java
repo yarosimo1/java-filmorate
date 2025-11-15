@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/rating")
+@RequestMapping("/MPA")
 public class RatingController {
     private final RatingService ratingService;
 
@@ -33,8 +33,8 @@ public class RatingController {
         return ratingService.putRating(newRating);
     }
 
-    @DeleteMapping("/{ratingId}")
-    public Rating deleteRating(@PathVariable("ratingId") Long ratingId) {
-        return ratingService.deleteRating(ratingId);
+    @DeleteMapping("/{id}")
+    public Rating deleteRating(@PathVariable("id") Long id) {
+        return ratingService.deleteRating(id);
     }
 }
