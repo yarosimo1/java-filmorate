@@ -33,6 +33,7 @@ public class FilmValidationTest {
         film.setDescription("Фильм о симуляции реальности");
         film.setReleaseDate(LocalDate.of(1999, 3, 31));
         film.setDuration(Duration.ofMinutes(136));
+        film.setRatingId(1L);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
 
@@ -46,7 +47,7 @@ public class FilmValidationTest {
         Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
 
         assertFalse(violations.isEmpty());
-        assertEquals(6, violations.size(), "Ожидалось 6 ошибок");
+        assertEquals(7, violations.size(), "Ожидалось 7 ошибок");
     }
 
     @Test
