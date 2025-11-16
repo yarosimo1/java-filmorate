@@ -1,7 +1,7 @@
 # Описание ER-диаграммы для java-filmorate
 
 ### Сама диаграмма:
-![ER-диаграмма filmorate](ER-diagram/img/Database-ER-diagram(1).png)
+![ER-диаграмма filmorate](ER-diagram/img/Database-ER-diagram.png)
 ## Таблицы
 - film - хранит данные о фильмах
 - user - хранит данные о пользователях
