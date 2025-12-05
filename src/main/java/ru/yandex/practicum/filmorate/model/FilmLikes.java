@@ -10,5 +10,5 @@ public class FilmLikes {
     @NotNull(groups = {OnUpdate.class, OnCreate.class}, message = "Id должен быть указан")
     private Long userId;
     @NotNull(groups = {OnUpdate.class, OnCreate.class}, message = "Id должен быть указан")
-    private Long FilmId;
+    private Long filmId;
 }
