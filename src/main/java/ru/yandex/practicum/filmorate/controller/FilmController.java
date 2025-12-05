@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
@@ -22,6 +22,11 @@ public class FilmController {
     @GetMapping
     public Collection<Film> getFilms() {
         return filmService.getFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilms(@PathVariable("id") Long id) {
+        return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
@@ -52,15 +57,5 @@ public class FilmController {
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLike(@PathVariable("filmId") Long filmId, @PathVariable("userId") Long userId) {
         return filmService.deleteLike(filmId, userId);
-    }
-
-    @PutMapping("/{filmId}/genre/{genreId}")
-    public Film addGenre(@PathVariable("filmId") Long filmId, @PathVariable("genreId") Long genreId) {
-        return filmService.addGenre(filmId, genreId);
-    }
-
-    @DeleteMapping("/{filmId}/genre/{genreId}")
-    public Film deleteGenre(@PathVariable("filmId") Long filmId, @PathVariable("genreId") Long genreId) {
-        return filmService.deleteGenre(filmId, genreId);
     }
 }

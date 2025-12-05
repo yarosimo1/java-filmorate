@@ -29,11 +29,12 @@ public class FilmValidationTest {
     @DisplayName("Валидация должна пройти при корректных данных")
     public void shouldValidateCorrectFilm() {
         Film film = new Film();
-        film.setName("Матрица");
-        film.setDescription("Фильм о симуляции реальности");
-        film.setReleaseDate(LocalDate.of(1999, 3, 31));
-        film.setDuration(Duration.ofMinutes(136));
-        film.setRatingId(1L);
+        film.setName("film");
+        film.setDescription("Sample description for film");
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(Duration.ofMinutes(120));
+        film.setMpa(createSampleRating(1L, "ratingName"));
+        film.getGenres().add(createSampleGenre(1L, "Drama"));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film, OnCreate.class);
 
@@ -93,5 +94,30 @@ public class FilmValidationTest {
 
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Продолжительность фильма")));
+    }
+
+    private Film createSampleFilm(String name, long durationMinutes, Long ratingId, String ratingName) {
+        Film film = new Film();
+        film.setName(name);
+        film.setDescription("Sample description for " + name);
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(Duration.ofMinutes(durationMinutes));
+        film.setMpa(createSampleRating(ratingId, ratingName));
+        film.getGenres().add(createSampleGenre(1L, "Drama")); // Добавляем хотя бы один жанр
+        return film;
+    }
+
+    private Rating createSampleRating(Long ratingId, String ratingName) {
+        Rating rating = new Rating();
+        rating.setId(ratingId);
+        rating.setName(ratingName);
+        return rating;
+    }
+
+    private Genre createSampleGenre(Long id, String name) {
+        Genre genre = new Genre();
+        genre.setId(id);
+        genre.setName(name);
+        return genre;
     }
 }

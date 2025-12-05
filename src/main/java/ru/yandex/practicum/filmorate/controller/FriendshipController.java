@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Friendship;
-import ru.yandex.practicum.filmorate.service.FriendshipService;
+import ru.yandex.practicum.filmorate.service.user.FriendshipService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
@@ -25,16 +25,11 @@ public class FriendshipController {
 
     @PostMapping
     public Friendship postFriendship(@Validated(OnCreate.class) @RequestBody Friendship friendship) {
-        return friendshipService.postFriendship(friendship);
+        return friendshipService.createFriendship(friendship);
     }
 
     @PutMapping
     public Friendship putFriendship(@Validated(OnUpdate.class) @RequestBody Friendship newFriendship) {
-        return friendshipService.putFriendship(newFriendship);
-    }
-
-    @DeleteMapping("/{frinedshipId}")
-    public Friendship deleteFriendship(@PathVariable("frinedshipId") Long frinedshipId) {
-        return friendshipService.deleteFriendship(frinedshipId);
+        return friendshipService.updateFriendship(newFriendship);
     }
 }

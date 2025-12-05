@@ -17,7 +17,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film add(Film film) {
         log.info("Добавление фильма Film={}", film);
-        film.setId(getNextId());
         films.put(film.getId(), film);
         return film;
     }
@@ -37,14 +36,5 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Map<Long, Film> getFilms() {
         return films;
-    }
-
-    private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
     }
 }

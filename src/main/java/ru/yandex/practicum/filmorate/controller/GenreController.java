@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.film.GenreService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
@@ -11,16 +12,18 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/genres")
+@AllArgsConstructor
 public class GenreController {
     private final GenreService genreService;
 
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
+    @GetMapping
+    public Collection<Genre> getGenres() {
+        return genreService.getGenres();
     }
 
-    @GetMapping
-    public Collection<Genre> getGenre() {
-        return genreService.getGenre();
+    @GetMapping("/{generId}")
+    public Genre getGenreById(@PathVariable("generId") Long genreId) {
+        return genreService.getGenreById(genreId);
     }
 
     @PostMapping

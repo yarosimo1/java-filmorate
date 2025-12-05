@@ -24,11 +24,11 @@ import java.util.Set;
  */
 @Data
 public class Film {
-
-    private final Set<Long> whoLikes = new HashSet<>();
-    private final Set<Long> genre = new HashSet<>();
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
+    private final Set<Long> whoLikes = new HashSet<>();
+    @NotNull
+    private Set<Genre> genres = new HashSet<>();
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
     private String name;
@@ -44,7 +44,8 @@ public class Film {
     @JsonSerialize(using = DurationToSecondsSerializer.class)
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
-    private Long ratingId;
+    @NotNull
+    private Rating mpa;
 
     public boolean addLike(@NotNull @Positive Long id) {
         return whoLikes.add(id);
@@ -54,12 +55,12 @@ public class Film {
         return whoLikes.remove(id);
     }
 
-    public boolean addGenre(@NotNull @Positive Long id) {
-        return genre.add(id);
+    public boolean addGenre(@NotNull @Positive Genre genre) {
+        return genres.add(genre);
     }
 
-    public boolean deleteGenre(@NotNull @Positive Long id) {
-        return genre.remove(id);
+    public boolean deleteGenre(@NotNull @Positive Genre genre) {
+        return genres.remove(genre);
     }
 }
 

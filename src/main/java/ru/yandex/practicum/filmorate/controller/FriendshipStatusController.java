@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.FriendshipStatus;
-import ru.yandex.practicum.filmorate.service.FriendshipStatusService;
+import ru.yandex.practicum.filmorate.service.user.FriendshipStatusService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
