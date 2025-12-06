@@ -5,10 +5,12 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,15 +18,17 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FilmMapper {
 
-    public static Film mapToFilm(FilmCreateDto dto, Rating mpa, Set<Genre> genres) {
+    public static Film mapToFilm(FilmCreateDto dto) {
         Film film = new Film();
         film.setName(dto.getName());
         film.setDescription(dto.getDescription());
         film.setReleaseDate(dto.getReleaseDate());
         film.setDuration(dto.getDuration());
-        film.setMpa(mpa);
-        if (genres != null) {
-            film.setGenres(new HashSet<>(genres));
+        film.setMpa(RatingMapper.mapToRating(dto.getMpa()));
+        if (dto.getGenres() != null) {
+            film.setGenres(dto.getGenres().stream()
+                    .sorted(Comparator.comparing(GenreDto::getId))
+                    .map(GenreMapper::mapToGenre).collect(Collectors.toSet()));
         }
         return film;
     }
@@ -36,9 +40,12 @@ public final class FilmMapper {
         dto.setDescription(film.getDescription());
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
-        dto.setMpaId(film.getMpa().getId());
-        dto.setGenreIds(film.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
-        dto.setWhoLikes(film.getWhoLikes());
+        dto.setMpa(RatingMapper.mapToDto(film.getMpa()));
+
+        dto.setGenres(film.getGenres().stream().map(GenreMapper::mapToDto).toList());
+
+        dto.setLikes(film.getWhoLikes());
+
         return dto;
     }
 

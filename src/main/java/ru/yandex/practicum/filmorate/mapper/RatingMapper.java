@@ -11,8 +11,17 @@ import ru.yandex.practicum.filmorate.model.Rating;
 public final class RatingMapper {
 
     public static Rating mapToRating(RatingCreateDto dto) {
-        Rating rating = new Rating();
-        rating.setName(dto.getName());
+        Rating rating = Rating.builder()
+                .name(dto.getName())
+                .build();
+        return rating;
+    }
+
+    public static Rating mapToRating(RatingDto dto) {
+        Rating rating = Rating.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .build();
         return rating;
     }
 

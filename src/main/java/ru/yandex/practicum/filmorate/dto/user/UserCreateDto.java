@@ -2,22 +2,24 @@ package ru.yandex.practicum.filmorate.dto.user;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.method.OnCreate;
+import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
 import java.time.LocalDate;
 
 @Data
 public class UserCreateDto {
-    @NotBlank
-    @Email
+    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Электронная почта обязательна")
+    @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Электронная почта не может быть пустой")
+    @Email(groups = {OnCreate.class, OnUpdate.class}, message = "Некорректный формат электронной почты")
     private String email;
-
-    @NotBlank
-    @Pattern(regexp = "^\\S+$")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Логин обязателен")
+    @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Логин не может быть пустым")
+    @Pattern(groups = {OnCreate.class, OnUpdate.class}, regexp = "^\\S+$", message = "Логин не должен содержать пробелов")
     private String login;
-
     private String name;
-
-    @NotNull
-    @PastOrPresent
+    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Дата рождения обязательна")
+    @PastOrPresent(groups = {OnCreate.class, OnUpdate.class}, message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
+
 }

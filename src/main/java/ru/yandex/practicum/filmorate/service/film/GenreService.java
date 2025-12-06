@@ -1,79 +1,88 @@
 package ru.yandex.practicum.filmorate.service.film;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.GenreDBStorage;
+import ru.yandex.practicum.filmorate.dto.genre.GenreCreateDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreUpdateDto;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.genre.GenreStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Getter
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenreService {
+
     @Qualifier("InMemoryGenreStorage")
     private final GenreStorage inMemoryGenreStorage;
+
     @Qualifier("GenreDBStorage")
     private final GenreDBStorage genreDBStorage;
 
-    public Collection<Genre> getGenres() {
+    public Collection<GenreDto> getGenres() {
         log.info("Получен запрос на получение всех жанров");
-        return genreDBStorage.findAll();
+        return genreDBStorage.findAll().stream().map(GenreMapper::mapToDto).collect(Collectors.toList());
     }
 
-    public Genre getGenreById(Long id) {
-        log.info("Получен запрос на получение жанра");
-        return genreDBStorage.findById(id).get();
+    public GenreDto getGenreById(Long id) {
+        log.info("Получен запрос на получение жанра id={}", id);
+
+        Genre genre = genreDBStorage.findById(id).orElseThrow(() -> new NoSuchElementException("Жанр не найден"));
+
+        return GenreMapper.mapToDto(genre);
     }
 
-    public Genre postGenre(Genre genre) {
-        log.info("Получен запрос на добавление жанра {}", genre);
+    public GenreDto postGenre(GenreCreateDto dto) {
+        log.info("Получен запрос на добавление жанра: {}", dto);
 
-        Optional<Genre> alreadyExistUser = genreDBStorage.findByName(genre.getName());
-
-        if (alreadyExistUser.isPresent()) {
+        Optional<Genre> existed = genreDBStorage.findByName(dto.getName());
+        if (existed.isPresent()) {
             throw new DuplicatedDataException("Данный жанр уже существует");
         }
 
-        Genre createdGenre = genreDBStorage.add(genre);
-        log.info("Добавлен новый фильм: id={}, name={}", createdGenre.getName());
+        Genre genre = GenreMapper.mapToGenre(dto);
+        Genre created = genreDBStorage.add(genre);
 
-        return createdGenre;
+        log.info("Добавлен новый жанр: id={} name={}", created.getId(), created.getName());
+
+        return GenreMapper.mapToDto(created);
     }
 
-    public Genre putGenre(Genre newGenre) {
-        log.info("Получен запрос на обновление жанра с id={}", newGenre.getId());
+    public GenreDto putGenre(GenreUpdateDto dto) {
+        log.info("Получен запрос на обновление жанра id={}", dto.getId());
 
-        Genre oldGenre = genreDBStorage.findById(newGenre.getId()).orElseThrow(() -> new NoSuchElementException("Жанр не найден"));
+        Genre existing = genreDBStorage.findById(dto.getId()).orElseThrow(() -> new NoSuchElementException("Жанр не найден"));
 
-        oldGenre.setName(newGenre.getName());
+        GenreMapper.updateGenreFields(existing, dto);
 
-        genreDBStorage.update(oldGenre);
-        log.info("Жанр id={} успешно обновлён", newGenre.getId());
+        genreDBStorage.update(existing);
 
-        return oldGenre;
+        log.info("Жанр id={} успешно обновлён", dto.getId());
+
+        return GenreMapper.mapToDto(existing);
     }
 
-    public Genre deleteGenre(Long id) {
-        log.info("Получен запрос на удаление жанра с id={}", id);
+    public GenreDto deleteGenre(Long id) {
+        log.info("Получен запрос на удаление жанра id={}", id);
 
-        if (id == null || id == 0 || id < 0) {
-            log.warn("Ошибка удаления: жанра с id={} не найден", id);
-            throw new NoSuchElementException("Жанр с id=" + id + " не найден");
+        if (id == null || id <= 0) {
+            throw new NoSuchElementException("Некорректный id: " + id);
         }
 
-        Genre deletedGenre = genreDBStorage.delete(id);
+        Genre deleted = genreDBStorage.delete(id);
 
-        log.info("Жанр с id={} успешно удален", deletedGenre.getId());
+        log.info("Жанр id={} успешно удалён", id);
 
-        return deletedGenre;
+        return GenreMapper.mapToDto(deleted);
     }
 }

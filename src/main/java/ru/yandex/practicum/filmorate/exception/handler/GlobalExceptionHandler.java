@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
-import ru.yandex.practicum.filmorate.exception.ErrorResponse;
-import ru.yandex.practicum.filmorate.exception.InternalServerException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.*;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -33,6 +30,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NoSuchElementException ex) {
+        log.warn("Ошибка 404: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
         log.warn("Ошибка 404: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(ex.getMessage()));

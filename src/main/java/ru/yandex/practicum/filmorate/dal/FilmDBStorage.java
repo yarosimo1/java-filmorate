@@ -15,6 +15,15 @@ import java.util.Optional;
 public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM FILM";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM FILM WHERE FILM_ID = ?";
+    private static final String FIND_BY_POPULAR_FILMS = """
+            SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEAS_DATE, f.DURATION, f.RATING_MPA_ID,
+                   COUNT(fl.USER_ID) AS LIKES_COUNT
+            FROM FILM f
+            LEFT JOIN FILM_LIKES fl ON f.FILM_ID = fl.FILM_ID
+            GROUP BY f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEAS_DATE, f.DURATION, f.RATING_MPA_ID
+            ORDER BY LIKES_COUNT DESC
+            LIMIT ?
+            """;
     private static final String INSERT_QUERY = "INSERT INTO FILM (DESCRIPTION, NAME, RELEAS_DATE, DURATION, RATING_MPA_ID) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE FILM SET DESCRIPTION = ?, NAME = ?, RELEAS_DATE = ?, DURATION = ?, RATING_MPA_ID = ? WHERE FILM_ID = ?";
     private static final String DELETE_QUERY = "DELETE FROM FILM WHERE FILM_ID = ?";
@@ -30,6 +39,11 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
 
     public List<Film> findAll() {
         List<Film> films = findMany(FIND_ALL_QUERY);
+        return films;
+    }
+
+    public List<Film> findPopularFilms(int count) {
+        List<Film> films = findMany(FIND_BY_POPULAR_FILMS, count);
         return films;
     }
 

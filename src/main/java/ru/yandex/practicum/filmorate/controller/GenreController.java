@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.dto.genre.GenreCreateDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreUpdateDto;
 import ru.yandex.practicum.filmorate.service.film.GenreService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
@@ -12,32 +14,33 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/genres")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenreController {
+
     private final GenreService genreService;
 
     @GetMapping
-    public Collection<Genre> getGenres() {
+    public Collection<GenreDto> getGenres() {
         return genreService.getGenres();
     }
 
-    @GetMapping("/{generId}")
-    public Genre getGenreById(@PathVariable("generId") Long genreId) {
+    @GetMapping("/{genreId}")
+    public GenreDto getGenreById(@PathVariable Long genreId) {
         return genreService.getGenreById(genreId);
     }
 
     @PostMapping
-    public Genre postGenre(@Validated(OnCreate.class) @RequestBody Genre genre) {
-        return genreService.postGenre(genre);
+    public GenreDto postGenre(@Validated(OnCreate.class) @RequestBody GenreCreateDto dto) {
+        return genreService.postGenre(dto);
     }
 
     @PutMapping
-    public Genre putGenre(@Validated(OnUpdate.class) @RequestBody Genre newGenre) {
-        return genreService.putGenre(newGenre);
+    public GenreDto putGenre(@Validated(OnUpdate.class) @RequestBody GenreUpdateDto dto) {
+        return genreService.putGenre(dto);
     }
 
     @DeleteMapping("/{genreId}")
-    public Genre deleteGenre(@PathVariable("genreId") Long genreId) {
+    public GenreDto deleteGenre(@PathVariable Long genreId) {
         return genreService.deleteGenre(genreId);
     }
 }

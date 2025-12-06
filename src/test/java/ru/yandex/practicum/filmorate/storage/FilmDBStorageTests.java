@@ -122,16 +122,16 @@ class FilmDBStorageTests {
     }
 
     private Rating createSampleRating(Long ratingId, String ratingName) {
-        Rating rating = new Rating();
-        rating.setId(ratingId);
-        rating.setName(ratingName);
-        return rating;
+        return Rating.builder()
+                .id(ratingId)
+                .name(ratingName)
+                .build();
     }
 
     private Genre createSampleGenre(Long id, String name) {
-        Genre genre = new Genre();
-        genre.setId(id);
-        genre.setName(name);
-        return genre;
+        return Genre.builder()
+                .id(id)
+                .name(name)
+                .build();
     }
 }
