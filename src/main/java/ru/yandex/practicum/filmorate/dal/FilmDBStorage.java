@@ -49,10 +49,7 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
             """;
     private static final String DELETE_FILM_GENRES = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
     private static final String DELETE_FILM_LIKES = "DELETE FROM FILM_LIKES WHERE FILM_ID = ?";
-    private static final String DELETE_FILM_LIKE = """
-                DELETE FROM FILM_LIKES 
-                WHERE FILM_ID = ? AND USER_ID = ?
-            """;
+    private static final String DELETE_FILM_LIKE = " DELETE FROM FILM_LIKES WHERE FILM_ID = ? AND USER_ID = ?";
     private static final String INSERT_FILM_GENRE = "INSERT INTO FILMS_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
     private static final String INSERT_FILM_LIKES = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
     private static final String LOAD_GENRES = """
