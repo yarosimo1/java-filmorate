@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dal.GenreDBStorage;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.genre.GenreStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GenreService {
-
-    @Qualifier("InMemoryGenreStorage")
-    private final GenreStorage inMemoryGenreStorage;
 
     @Qualifier("GenreDBStorage")
     private final GenreDBStorage genreDBStorage;

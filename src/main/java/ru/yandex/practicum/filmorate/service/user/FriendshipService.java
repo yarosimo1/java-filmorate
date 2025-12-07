@@ -15,8 +15,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 @Getter
 public class FriendshipService {
-
-    private final FriendshipDBStorage friendshipDBStorage;
+    FriendshipDBStorage friendshipDBStorage;
 
     public Collection<Friendship> getFriendship() {
         log.info("Получен запрос на получение всех дружб");

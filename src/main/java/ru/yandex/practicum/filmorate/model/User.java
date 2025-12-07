@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 public class User {
 
-    private final Set<Long> friendships = new HashSet<>();
+    private Set<Long> friendships = new HashSet<>();
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Электронная почта обязательна")

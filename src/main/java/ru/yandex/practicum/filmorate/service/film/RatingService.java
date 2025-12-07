@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dal.RatingDBStorage;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.mapper.RatingMapper;
 import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.storage.film.rating.RatingStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -18,10 +17,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class RatingService {
-
-    @Qualifier("InMemoryRatingStorage")
-    private final RatingStorage inMemoryRatingStorage;
-
     @Qualifier("RatingDBStorage")
     private final RatingDBStorage ratingDBStorage;
 

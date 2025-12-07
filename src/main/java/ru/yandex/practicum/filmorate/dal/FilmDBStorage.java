@@ -129,16 +129,18 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
     }
 
     public void updateFilmGenres(long filmId, Set<Genre> genres) {
-        // Удаляем все старые связи
         jdbc.update(DELETE_FILM_GENRES, filmId);
 
-        // Если жанров нет — просто очищаем
         if (genres == null || genres.isEmpty()) {
             return;
         }
 
-        // Добавляем новые связи
-        genres.forEach(g -> jdbc.update(INSERT_FILM_GENRE, filmId, g.getId()));
+        List<Genre> genreList = new ArrayList<>(genres);
+
+        jdbc.batchUpdate(INSERT_FILM_GENRE, genreList, genreList.size(), (ps, genre) -> {
+            ps.setLong(1, filmId);
+            ps.setLong(2, genre.getId());
+        });
     }
 
 
