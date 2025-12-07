@@ -12,74 +12,60 @@ import java.util.stream.Collectors;
 
 @Repository
 public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
-    public FilmDBStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
-        super(jdbc, mapper);
-    }
-
     private static final String FIND_ALL_QUERY = """
-        SELECT f.FILM_ID,
-               f.NAME,
-               f.DESCRIPTION,
-               f.RELEAS_DATE,
-               f.DURATION,
-               m.RATING_ID,
-               m.NAME AS RATING_NAME
-        FROM FILM f
-        LEFT JOIN RATING_MPA m ON f.RATING_MPA_ID = m.RATING_ID
-        ORDER BY f.FILM_ID
-        """;
-
+            SELECT f.FILM_ID,
+                   f.NAME,
+                   f.DESCRIPTION,
+                   f.RELEAS_DATE,
+                   f.DURATION,
+                   m.RATING_ID,
+                   m.NAME AS RATING_NAME
+            FROM FILM f
+            LEFT JOIN RATING_MPA m ON f.RATING_MPA_ID = m.RATING_ID
+            ORDER BY f.FILM_ID
+            """;
     private static final String FIND_BY_ID_QUERY = """
-        SELECT f.FILM_ID,
-               f.NAME,
-               f.DESCRIPTION,
-               f.RELEAS_DATE,
-               f.DURATION,
-               m.RATING_ID,
-               m.NAME AS RATING_NAME
-        FROM FILM f
-        LEFT JOIN RATING_MPA m ON f.RATING_MPA_ID = m.RATING_ID
-        WHERE f.FILM_ID = ?
-        """;
-
+            SELECT f.FILM_ID,
+                   f.NAME,
+                   f.DESCRIPTION,
+                   f.RELEAS_DATE,
+                   f.DURATION,
+                   m.RATING_ID,
+                   m.NAME AS RATING_NAME
+            FROM FILM f
+            LEFT JOIN RATING_MPA m ON f.RATING_MPA_ID = m.RATING_ID
+            WHERE f.FILM_ID = ?
+            """;
     private static final String INSERT_QUERY = """
-        INSERT INTO FILM (DESCRIPTION, NAME, RELEAS_DATE, DURATION, RATING_MPA_ID)
-        VALUES (?, ?, ?, ?, ?)
-        """;
-
+            INSERT INTO FILM (DESCRIPTION, NAME, RELEAS_DATE, DURATION, RATING_MPA_ID)
+            VALUES (?, ?, ?, ?, ?)
+            """;
     private static final String UPDATE_QUERY = """
-        UPDATE FILM SET DESCRIPTION = ?, NAME = ?, RELEAS_DATE = ?, DURATION = ?, RATING_MPA_ID = ?
-        WHERE FILM_ID = ?
-        """;
-
+            UPDATE FILM SET DESCRIPTION = ?, NAME = ?, RELEAS_DATE = ?, DURATION = ?, RATING_MPA_ID = ?
+            WHERE FILM_ID = ?
+            """;
     private static final String DELETE_QUERY = """
-        DELETE FROM FILM WHERE FILM_ID = ?
-        """;
-
-    private static final String DELETE_FILM_GENRES =
-            "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
-
-    private static final String DELETE_FILM_LIKES =
-            "DELETE FROM FILM_LIKES WHERE FILM_ID = ?";
-
+            DELETE FROM FILM WHERE FILM_ID = ?
+            """;
+    private static final String DELETE_FILM_GENRES = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
+    private static final String DELETE_FILM_LIKES = "DELETE FROM FILM_LIKES WHERE FILM_ID = ?";
     private static final String DELETE_FILM_LIKE = """
-        DELETE FROM FILM_LIKES 
-        WHERE FILM_ID = ? AND USER_ID = ?
-    """;
-
-    private static final String INSERT_FILM_GENRE =
-            "INSERT INTO FILMS_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-
+                DELETE FROM FILM_LIKES 
+                WHERE FILM_ID = ? AND USER_ID = ?
+            """;
+    private static final String INSERT_FILM_GENRE = "INSERT INTO FILMS_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
     private static final String INSERT_FILM_LIKES = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
-
     private static final String LOAD_GENRES = """
             SELECT fg.FILM_ID, g.GENRE_ID, g.NAME
             FROM FILMS_GENRES fg
             JOIN GENRE g ON fg.GENRE_ID = g.GENRE_ID
             ORDER BY g.GENRE_ID
             """;
-
     private static final String LOAD_LIKES = "SELECT FILM_ID, USER_ID FROM FILM_LIKES";
+
+    public FilmDBStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+        super(jdbc, mapper);
+    }
 
     // ----------- LOADING HELPERS ------------
 
@@ -91,11 +77,7 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
             while (rs.next()) {
                 long filmId = rs.getLong("FILM_ID");
 
-                map.computeIfAbsent(filmId, id -> new HashSet<>())
-                        .add(Genre.builder()
-                                .id(rs.getLong("GENRE_ID"))
-                                .name(rs.getString("NAME"))
-                                .build());
+                map.computeIfAbsent(filmId, id -> new HashSet<>()).add(Genre.builder().id(rs.getLong("GENRE_ID")).name(rs.getString("NAME")).build());
             }
             return map;
         });
@@ -159,22 +141,13 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
         }
 
         // Добавляем новые связи
-        genres.forEach(g ->
-                jdbc.update(INSERT_FILM_GENRE, filmId, g.getId())
-        );
+        genres.forEach(g -> jdbc.update(INSERT_FILM_GENRE, filmId, g.getId()));
     }
 
 
     @Override
     public Film add(Film film) {
-        long id = insert(
-                INSERT_QUERY,
-                film.getDescription(),
-                film.getName(),
-                film.getReleaseDate(),
-                film.getDuration().toSeconds(),
-                film.getMpa() != null ? film.getMpa().getId() : null
-        );
+        long id = insert(INSERT_QUERY, film.getDescription(), film.getName(), film.getReleaseDate(), film.getDuration().toSeconds(), film.getMpa() != null ? film.getMpa().getId() : null);
 
         film.setId(id);
 
@@ -185,31 +158,24 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
         jdbc.update(INSERT_FILM_LIKES, filmId, userId);
 
     }
+
     public void deleteLike(long filmId, long userId) {
         jdbc.update(DELETE_FILM_LIKE, filmId, userId);
     }
 
     @Override
     public Film update(Film film) {
-        update(
-                UPDATE_QUERY,
-                film.getDescription(),
-                film.getName(),
-                film.getReleaseDate(),
-                film.getDuration().toSeconds(),
-                film.getMpa() != null ? film.getMpa().getId() : null,
-                film.getId()
-        );
+        update(UPDATE_QUERY, film.getDescription(), film.getName(), film.getReleaseDate(), film.getDuration().toSeconds(), film.getMpa() != null ? film.getMpa().getId() : null, film.getId());
 
         return film;
     }
 
     @Override
     public Film delete(Long id) {
-        Film film = findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
+        Film film = findById(id).orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
 
         jdbc.update(DELETE_FILM_GENRES, id);
+
         jdbc.update(DELETE_FILM_LIKES, id);
 
         delete(DELETE_QUERY, id);
@@ -219,7 +185,6 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Map<Long, Film> getFilms() {
-        return findAll().stream()
-                .collect(Collectors.toMap(Film::getId, f -> f));
+        return findAll().stream().collect(Collectors.toMap(Film::getId, f -> f));
     }
 }
