@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
@@ -10,15 +9,14 @@ import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.RatingMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenres;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.service.user.UserService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,34 +26,23 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class FilmService {
-
-    @Qualifier("InMemoryFilmStorage")
-    private final FilmStorage inMemoryFilmStorage;
-
-    @Qualifier("FilmDBStorage")
     private final FilmDBStorage filmDBStorage;
 
     private final GenreService genreService;
     private final RatingService ratingService;
-    private final FilmGenresService filmGenresService;
-    private final FilmLikesService filmLikesService;
     private final UserService userService;
 
     public List<FilmDto> getAllFilms() {
         log.info("Получен запрос на получение всех фильмов");
-        return inMemoryFilmStorage.getFilms()
-                .values()
-                .stream()
+        return filmDBStorage.findAll().stream()
                 .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public FilmDto getFilmById(Long id) {
         log.info("Получен запрос на получение фильма id={}", id);
-        Film film = inMemoryFilmStorage.getFilms().get(id);
-
-        if (film == null)
-            throw new NoSuchElementException("Фильм не найден");
+        Film film = filmDBStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
 
         return FilmMapper.mapToFilmDto(film);
     }
@@ -71,55 +58,43 @@ public class FilmService {
 
         Film savedFilm = filmDBStorage.add(film);
 
-        // Жанры
         Set<Genre> genres = resolveGenres(dto.getGenres());
-        savedFilm.setGenres(genres);
-        saveFilmGenres(savedFilm.getId(), genres);
+        filmDBStorage.updateFilmGenres(savedFilm.getId(), genres);
 
-        // Кэш
-        inMemoryFilmStorage.add(savedFilm);
+        Film fullFilm = filmDBStorage.findById(savedFilm.getId())
+                .orElseThrow(() -> new IllegalStateException("Ошибка при загрузке фильма после создания"));
 
-        return FilmMapper.mapToFilmDto(savedFilm);
+        return FilmMapper.mapToFilmDto(fullFilm);
     }
-
-    // =================== UPDATE ===================
 
     public FilmDto updateFilm(FilmUpdateDto dto) {
         log.info("Обновление фильма {}", dto);
 
-        Film existingFilm = inMemoryFilmStorage.getFilms().get(dto.getId());
-        if (existingFilm == null)
-            throw new NoSuchElementException("Фильм не найден");
+        Film existingFilm = filmDBStorage.findById(dto.getId())
+                .orElseThrow(() -> new NotFoundException("Фильм с id=" + dto.getId() + " не найден"));
 
-        Rating rating = dto.getMpa() != null ?
-                RatingMapper.mapToRating(ratingService.getRatingById(dto.getMpa().getId()))
+        Rating rating = dto.getMpa() != null
+                ? RatingMapper.mapToRating(ratingService.getRatingById(dto.getMpa().getId()))
                 : existingFilm.getMpa();
 
-        Set<Genre> genres = dto.getGenres() != null ?
-                resolveGenres(dto.getGenres())
+        Set<Genre> genres = dto.getGenres() != null
+                ? resolveGenres(dto.getGenres())
                 : existingFilm.getGenres();
 
         FilmMapper.updateFilmFields(existingFilm, dto, rating, genres);
 
         filmDBStorage.update(existingFilm);
 
-        filmGenresService.deleteGenresByFilmId(existingFilm.getId());
-        saveFilmGenres(existingFilm.getId(), genres);
-
-        // Кэш обновляем
-        inMemoryFilmStorage.update(existingFilm);
+        filmDBStorage.updateFilmGenres(existingFilm.getId(), genres);
 
         return FilmMapper.mapToFilmDto(existingFilm);
     }
+
 
     public FilmDto deleteFilm(Long id) {
         log.info("Удаление фильма id={}", id);
 
         Film deleted = filmDBStorage.delete(id);
-        filmGenresService.deleteGenresByFilmId(id);
-
-        // Убираем из кэша
-        inMemoryFilmStorage.getFilms().remove(id);
 
         return FilmMapper.mapToFilmDto(deleted);
     }
@@ -130,19 +105,18 @@ public class FilmService {
         validateIds(filmId, userId);
 
         userService.getUserDBStorage().findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        Film film = inMemoryFilmStorage.getFilms().get(filmId);
-        if (film == null)
-            throw new NoSuchElementException("Фильм не найден");
+        Film film = filmDBStorage.findById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
+
+        filmDBStorage.addLike(filmId, userId);
 
         film.addLike(userId);
-        filmLikesService.create(filmId, userId);
-
-        inMemoryFilmStorage.update(film);
 
         return FilmMapper.mapToFilmDto(film);
     }
+
 
     public FilmDto deleteLike(Long filmId, Long userId) {
         log.info("Удаление лайка filmId={}, userId={}", filmId, userId);
@@ -150,16 +124,14 @@ public class FilmService {
         validateIds(filmId, userId);
 
         userService.getUserDBStorage().findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        Film film = inMemoryFilmStorage.getFilms().get(filmId);
-        if (film == null)
-            throw new NoSuchElementException("Фильм не найден");
+        Film film = filmDBStorage.findById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм не найден"));
+
+        filmDBStorage.deleteLike(filmId, userId);
 
         film.deleteLike(userId);
-        filmLikesService.deleteLikes(filmId, userId);
-
-        inMemoryFilmStorage.update(film);
 
         return FilmMapper.mapToFilmDto(film);
     }
@@ -167,7 +139,7 @@ public class FilmService {
     public List<FilmDto> getPopularFilms(int count) {
         log.info("Получен запрос на популярные фильмы count={}", count);
 
-        return inMemoryFilmStorage.getFilms()
+        return filmDBStorage.getFilms()
                 .values()
                 .stream()
                 .sorted((a, b) -> b.getWhoLikes().size() - a.getWhoLikes().size())
@@ -175,8 +147,6 @@ public class FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
-
-    // =================== HELPERS ===================
 
     private void validateIds(Long filmId, Long userId) {
         if (filmId == null || filmId <= 0 || userId == null || userId <= 0) {
@@ -197,13 +167,5 @@ public class FilmService {
                 })
                 .sorted(Comparator.comparing(Genre::getId))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private void saveFilmGenres(Long filmId, Set<Genre> genres) {
-        for (Genre g : genres) {
-            filmGenresService.create(
-                    FilmGenres.builder().filmId(filmId).genreId(g.getId()).build()
-            );
-        }
     }
 }

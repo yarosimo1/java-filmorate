@@ -18,12 +18,17 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setId(rs.getLong("FILM_ID"));
         film.setName(rs.getString("NAME"));
         film.setDescription(rs.getString("DESCRIPTION"));
-        film.setDuration(Duration.ofMinutes(rs.getInt("DURATION")));
+        film.setDuration(Duration.ofSeconds(rs.getInt("DURATION")));
 
         Date releaseDate = rs.getDate("RELEAS_DATE");
         film.setReleaseDate(releaseDate.toLocalDate());
 
-        film.setMpa(Rating.builder().id(rs.getLong("RATING_MPA_ID")).build());
+        film.setMpa(
+                Rating.builder()
+                        .id(rs.getLong("RATING_ID"))
+                        .name(rs.getString("RATING_NAME"))
+                        .build()
+        );
 
         return film;
     }

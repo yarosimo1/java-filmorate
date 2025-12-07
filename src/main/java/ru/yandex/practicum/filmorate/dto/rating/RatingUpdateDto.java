@@ -12,6 +12,5 @@ public class RatingUpdateDto {
     private Long id;
 
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название жанра не может быть пустым")
-    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Название жанра не может быть пустым")
     private String name;
 }

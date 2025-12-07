@@ -30,10 +30,8 @@ public class FilmDto {
     @NotNull
     private List<GenreDto> genres = new ArrayList<>();
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
-    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
     private String name;
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Описание не может быть пустым")
-    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Описание не может быть пустым")
     @Size(groups = {OnCreate.class, OnUpdate.class}, max = 200, message = "Максимальная длина описания — 200 символов")
     private String description;
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Дата релиза обязательна")

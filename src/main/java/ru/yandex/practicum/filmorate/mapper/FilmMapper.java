@@ -42,7 +42,11 @@ public final class FilmMapper {
         dto.setDuration(film.getDuration());
         dto.setMpa(RatingMapper.mapToDto(film.getMpa()));
 
-        dto.setGenres(film.getGenres().stream().map(GenreMapper::mapToDto).toList());
+        dto.setGenres(film.getGenres().stream()
+                .map(GenreMapper::mapToDto)
+                .sorted(Comparator.comparingLong(GenreDto::getId))
+                .toList());
+
 
         dto.setLikes(film.getWhoLikes());
 

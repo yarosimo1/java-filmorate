@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDBStorage extends BaseRepository<User> implements UserStorage {
@@ -58,6 +59,13 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public Map<Long, User> getUsers() {
-        return Map.of();
+        List<User> users = findAll();
+
+        return users.stream()
+                .collect(Collectors.toMap(
+                        User::getId,
+                        user -> user
+                ));
     }
 }
+

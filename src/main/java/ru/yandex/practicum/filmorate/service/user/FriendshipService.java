@@ -53,7 +53,6 @@ public class FriendshipService {
             log.info("Дружба userId={} → friendId={} удалена", userId, friendId);
         } else {
             log.warn("Попытка удалить несуществующую дружбу userId={} → friendId={}", userId, friendId);
-            // не выбрасываем исключение, чтобы метод был idемпотентным
         }
     }
 }
