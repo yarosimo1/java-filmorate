@@ -61,11 +61,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
     public Map<Long, User> getUsers() {
         List<User> users = findAll();
 
-        return users.stream()
-                .collect(Collectors.toMap(
-                        User::getId,
-                        user -> user
-                ));
+        return users.stream().collect(Collectors.toMap(User::getId, user -> user));
     }
 }
 

@@ -4,11 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.storage.film.rating.RatingStorage;
 
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Repository

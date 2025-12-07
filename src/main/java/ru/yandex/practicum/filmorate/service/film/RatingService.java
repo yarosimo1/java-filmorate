@@ -27,9 +27,7 @@ public class RatingService {
 
     public Collection<RatingDto> getRatings() {
         log.info("Получен запрос на получение всех рейтингов");
-        return ratingDBStorage.findAll().stream()
-                .map(RatingMapper::mapToDto)
-                .collect(Collectors.toList());
+        return ratingDBStorage.findAll().stream().map(RatingMapper::mapToDto).collect(Collectors.toList());
     }
 
     public RatingDto getRatingById(Long id) {
