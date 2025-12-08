@@ -6,8 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.ErrorResponse;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.*;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -36,8 +35,29 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
+        log.warn("Ошибка 404: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicatedDataException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatedData(DuplicatedDataException ex) {
+        log.warn("Ошибка 409: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
+        log.error("Неожиданная ошибка", ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Произошла внутренняя ошибка сервера"));
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<ErrorResponse> handleInternalServer(InternalServerException ex) {
         log.error("Неожиданная ошибка", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Произошла внутренняя ошибка сервера"));
