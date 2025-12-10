@@ -60,4 +60,10 @@ public class FilmController {
     public FilmDto deleteLike(@PathVariable("filmId") Long filmId, @PathVariable("userId") Long userId) {
         return filmService.deleteLike(filmId, userId);
     }
+
+    @GetMapping("/common")
+    public List<FilmDto> getCommonFilms(@RequestParam Long userId,
+                                        @RequestParam Long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }

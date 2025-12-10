@@ -9,10 +9,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.dal.FriendshipDBStorage;
+import ru.yandex.practicum.filmorate.dal.UserDBStorage;
+import ru.yandex.practicum.filmorate.model.*;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -31,8 +33,12 @@ class FilmDBStorageTests {
 
     private FilmDBStorage filmStorage;
 
+    private UserDBStorage userStorage;
+
+    private FriendshipDBStorage friendshipDBStorage;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         RowMapper<Film> mapper = (rs, rowNum) -> {
             Film film = new Film();
             film.setId(rs.getLong("FILM_ID"));
@@ -44,10 +50,32 @@ class FilmDBStorageTests {
             return film;
         };
         filmStorage = new FilmDBStorage(jdbcTemplate, mapper);
+
+        RowMapper<User> mapper1 = (rs, rowNum) -> {
+            User user = new User();
+            user.setId(rs.getLong("USER_ID"));
+            user.setEmail(rs.getString("EMAIL"));
+            user.setLogin(rs.getString("LOGIN"));
+            user.setName(rs.getString("NAME"));
+
+            Date birthday = rs.getDate("BIRTHDAY");
+            user.setBirthday(birthday.toLocalDate());
+            return user;
+        };
+        userStorage = new UserDBStorage(jdbcTemplate, mapper1);
+
+        RowMapper<Friendship> mapper2 = (rs, rowNum) -> {
+            return Friendship.builder()
+                    .userId(rs.getLong("USER_ID"))
+                    .friendId(rs.getLong("FRIEND_ID"))
+                    .friendshipStatusId(rs.getLong("FRIENDSHIP_STATUS_ID"))
+                    .build();
+        };
+        friendshipDBStorage = new FriendshipDBStorage(jdbcTemplate, mapper2);
     }
 
     @Test
-    void testAddFilm() {
+    public void testAddFilm() {
         Film film = createSampleFilm("Inception", 148, 1L, "G");
 
         Film savedFilm = filmStorage.add(film);
@@ -59,7 +87,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testFindById() {
+    public void testFindById() {
         Film film = createSampleFilm("Interstellar", 169, 2L, "PG-13");
         Film savedFilm = filmStorage.add(film);
 
@@ -71,7 +99,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         filmStorage.add(createSampleFilm("Film1", 90, 1L, "G"));
         filmStorage.add(createSampleFilm("Film2", 120, 2L, "PG-13"));
 
@@ -81,7 +109,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testUpdateFilm() {
+    public void testUpdateFilm() {
         Film film = createSampleFilm("Old Name", 100, 1L, "G");
         Film savedFilm = filmStorage.add(film);
 
@@ -96,7 +124,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testDeleteFilm() {
+    public void testDeleteFilm() {
         Film film = createSampleFilm("To be deleted", 110, 1L, "G");
         Film savedFilm = filmStorage.add(film);
 
@@ -107,6 +135,34 @@ class FilmDBStorageTests {
         assertThatThrownBy(() -> filmStorage.delete(savedFilm.getId()))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining("Фильм не найден");
+    }
+
+    @Test
+    void shouldReturnCommonFilms() {
+        User user = userStorage.add(createSampleUser("user", "user", "user@mail.com", LocalDate.now()));
+        User user1 = userStorage.add(createSampleUser("user1", "user1", "user1@mail.com", LocalDate.now()));
+
+        Film film = filmStorage.add(createSampleFilm("Film", 120, 1L, "PG"));
+        Film film1 = filmStorage.add(createSampleFilm("Film1", 120, 2L, "G"));
+        Film film2 = filmStorage.add(createSampleFilm("Film2", 120, 3L, "R"));
+
+        friendshipDBStorage.add(Friendship.builder()
+                        .userId(user.getId())
+                        .friendId(user1.getId())
+                        .friendshipStatusId(2L)
+                .build());
+
+        filmStorage.addLike(film.getId(), user.getId());
+        filmStorage.addLike(film1.getId(), user.getId());
+
+        filmStorage.addLike(film.getId(), user1.getId());
+        filmStorage.addLike(film1.getId(), user1.getId());
+        filmStorage.addLike(film2.getId(), user1.getId());
+
+        List<Film> result = filmStorage.findCommonFilms(user.getId(), user1.getId());
+
+        assertEquals(2, result.size());
+        assertEquals(film.getId(), result.get(0).getId());
     }
 
     // Вспомогательный метод для создания фильма с обязательными полями
@@ -133,5 +189,15 @@ class FilmDBStorageTests {
                 .id(id)
                 .name(name)
                 .build();
+    }
+
+    private User createSampleUser(String Login, String name, String email, LocalDate birthday) {
+        User user = new User();
+        user.setLogin(Login);
+        user.setName(name);
+        user.setEmail(email);
+        user.setBirthday(birthday);
+
+        return user;
     }
 }

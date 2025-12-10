@@ -47,6 +47,19 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
+    public List<FilmDto> getCommonFilms(Long userId, Long friendId) {
+        log.info("Получен запрос на получение общих фильмов для users {} и {}", userId, friendId);
+
+        userService.getUserDBStorage().findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
+        userService.getUserDBStorage().findById(friendId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + friendId + " не найден"));
+
+        return filmDBStorage.findCommonFilms(userId, friendId).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
+
     public FilmDto createFilm(FilmCreateDto dto) {
         log.info("Создание фильма: {}", dto);
 
@@ -90,7 +103,6 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(existingFilm);
     }
 
-
     public FilmDto deleteFilm(Long id) {
         log.info("Удаление фильма id={}", id);
 
@@ -116,7 +128,6 @@ public class FilmService {
 
         return FilmMapper.mapToFilmDto(film);
     }
-
 
     public FilmDto deleteLike(Long filmId, Long userId) {
         log.info("Удаление лайка filmId={}, userId={}", filmId, userId);
