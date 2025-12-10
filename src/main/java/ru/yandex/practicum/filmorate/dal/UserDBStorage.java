@@ -93,7 +93,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
         User user = findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
 
-        // удаляем и связи пользователя при его удалении
+        // удаляем связи пользователя при его удалении
         jdbc.update(DELETE_USER_FRIENDSHIPS, id, id); // здесь user_id и friend_id
         jdbc.update(DELETE_USER_LIKES, id); // здесь user_id
 
