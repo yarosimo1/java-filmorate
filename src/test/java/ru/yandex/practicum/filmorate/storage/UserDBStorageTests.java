@@ -8,11 +8,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.dal.UserDBStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +97,7 @@ class UserDBStorageTests {
         assertThat(deleted.getId()).isEqualTo(savedUser.getId());
 
         assertThatThrownBy(() -> userStorage.delete(savedUser.getId()))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("Пользователь не найден");
     }
 
