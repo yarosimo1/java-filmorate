@@ -20,8 +20,6 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
     private static final String INSERT_QUERY = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " + "VALUES (?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE USERS SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " + "WHERE USER_ID = ?";
     private static final String DELETE_QUERY = "DELETE FROM USERS WHERE USER_ID = ?";
-    private static final String DELETE_USER_FRIENDSHIPS = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? OR FRIEND_ID = ?";
-    private static final String DELETE_USER_LIKES = "DELETE FROM FILM_LIKES WHERE USER_ID = ?";
 
     public UserDBStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -93,10 +91,6 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
     public User delete(Long id) {
         User user = findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        // удаляем связи пользователя при его удалении
-        jdbc.update(DELETE_USER_FRIENDSHIPS, id, id); // здесь user_id и friend_id
-        jdbc.update(DELETE_USER_LIKES, id); // здесь user_id
 
         delete(DELETE_QUERY, id);
         return user;
