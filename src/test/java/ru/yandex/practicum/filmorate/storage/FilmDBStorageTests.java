@@ -139,8 +139,15 @@ class FilmDBStorageTests {
 
     @Test
     void shouldReturnCommonFilms() {
-        User user = userStorage.add(createSampleUser("user", "user", "user@mail.com", LocalDate.now()));
-        User user1 = userStorage.add(createSampleUser("user1", "user1", "user1@mail.com", LocalDate.now()));
+        User user = userStorage
+                .add(createSampleUser("user", "user", "user@mail.com", LocalDate.now()));
+        User user1 = userStorage
+                .add(createSampleUser("user1", "user1", "user1@mail.com", LocalDate.now()));
+        User user2 = userStorage
+                .add(createSampleUser("user2", "user2", "user2@mail.com", LocalDate.now()));
+        User user3 = userStorage
+                .add(createSampleUser("user3", "user3", "user3@mail.com", LocalDate.now()));
+
 
         Film film = filmStorage.add(createSampleFilm("Film", 120, 1L, "PG"));
         Film film1 = filmStorage.add(createSampleFilm("Film1", 120, 2L, "G"));
@@ -159,10 +166,18 @@ class FilmDBStorageTests {
         filmStorage.addLike(film1.getId(), user1.getId());
         filmStorage.addLike(film2.getId(), user1.getId());
 
+        filmStorage.addLike(film1.getId(), user2.getId());
+        filmStorage.addLike(film1.getId(), user3.getId());
+
         List<Film> result = filmStorage.findCommonFilms(user.getId(), user1.getId());
 
-        assertEquals(2, result.size());
-        assertEquals(film.getId(), result.get(0).getId());
+        assertEquals(2, result.size(), "Должно вернуться 2 общих фильма");
+
+        // сортировка: film1 должен быть первым
+        assertEquals(film1.getId(), result.get(0).getId(), "Самый популярный фильм должен быть первым");
+
+        // второй фильм — film
+        assertEquals(film.getId(), result.get(1).getId(), "Второй фильм должен быть менее популярным");
     }
 
     // Вспомогательный метод для создания фильма с обязательными полями
