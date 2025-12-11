@@ -36,7 +36,6 @@ public class RecommendationService {
 
         return films.stream()
                 .filter(f -> recommendedIds.contains(f.getId()))
-//                .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
@@ -62,17 +61,13 @@ public class RecommendationService {
 
         for (Map.Entry<Long, Set<Long>> entry : likesByUser.entrySet()) {
             Long otherUserId = entry.getKey();
-
-            if (otherUserId.equals(targetUserId)) {
-                continue;
-            }
+            if (otherUserId.equals(targetUserId)) continue;
 
             Set<Long> otherLikes = entry.getValue();
             Set<Long> intersection = new HashSet<>(targetLikes);
-
             intersection.retainAll(otherLikes);
 
-            if (intersection.size() > maxIntersection) {
+            if (!intersection.isEmpty() && intersection.size() > maxIntersection) {
                 maxIntersection = intersection.size();
                 bestUser = otherUserId;
             }
@@ -80,4 +75,5 @@ public class RecommendationService {
 
         return bestUser;
     }
+
 }
