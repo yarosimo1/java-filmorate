@@ -45,7 +45,6 @@ public class UserService {
     public UserDto postUser(UserCreateDto dto) {
         log.info("Добавление пользователя DTO={}", dto);
 
-
         userDBStorage.findByEmail(dto.getEmail()).ifPresent(u -> {
             throw new DuplicatedDataException("Этот email уже занят");
         });
@@ -106,7 +105,6 @@ public class UserService {
         User user = userDBStorage.findById(userId).get();
         return UserMapper.mapToDto(user);
     }
-
 
     public List<UserDto> getFriends(Long userId) {
 
