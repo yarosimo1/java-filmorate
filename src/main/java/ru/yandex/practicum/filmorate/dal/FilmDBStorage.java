@@ -60,6 +60,23 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
             """;
     private static final String LOAD_LIKES = "SELECT FILM_ID, USER_ID FROM FILM_LIKES";
 
+    private static final String FIND_COMMON_FILMS = """
+    SELECT f.FILM_ID,
+        f.NAME,
+        f.DESCRIPTION,
+        f.RELEAS_DATE,
+        f.DURATION,
+        m.RATING_ID,
+        m.NAME AS RATING_NAME
+    FROM FILM f
+    JOIN FILM_LIKES fl1 ON f.FILM_ID = fl1.FILM_ID AND fl1.USER_ID = ?
+    JOIN FILM_LIKES fl2 ON f.FILM_ID = fl2.FILM_ID AND fl2.USER_ID = ?
+    LEFT JOIN FILM_LIKES fl_all ON f.FILM_ID = fl_all.FILM_ID
+    LEFT JOIN RATING_MPA m ON f.RATING_MPA_ID = m.RATING_ID
+    GROUP BY f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEAS_DATE, f.DURATION, m.RATING_ID, m.NAME
+    ORDER BY COUNT(fl_all.USER_ID) DESC
+    """;
+
     public FilmDBStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
@@ -142,6 +159,15 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
             ps.setLong(2, genre.getId());
         });
     }
+
+    public List<Film> findCommonFilms(long userId, long friendId) {
+        List<Film> films = findMany(FIND_COMMON_FILMS, userId, friendId);
+
+        enrichFilms(films);
+
+        return films;
+    }
+
 
 
     @Override
