@@ -136,12 +136,14 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
-    public List<FilmDto> getPopularFilms(int count) {
+    public List<FilmDto> getPopularFilms(int count, Long genreId, Integer year) {
         log.info("Получен запрос на популярные фильмы count={}", count);
 
         return filmDBStorage.getFilms()
                 .values()
                 .stream()
+                .filter(film -> genreId == null || film.getGenres().stream().anyMatch(g -> g.getId().equals(genreId)))
+                .filter(film -> year == null || film.getReleaseDate().getYear() == year)
                 .sorted((a, b) -> b.getWhoLikes().size() - a.getWhoLikes().size())
                 .limit(count)
                 .map(FilmMapper::mapToFilmDto)
