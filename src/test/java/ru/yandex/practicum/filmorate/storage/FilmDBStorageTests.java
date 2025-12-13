@@ -41,6 +41,8 @@ class FilmDBStorageTests {
 
     @BeforeEach
     public void setUp() {
+        genreRowMapper = new GenreRowMapper();
+
         RowMapper<Film> mapper = (rs, rowNum) -> {
             Film film = new Film();
             film.setId(rs.getLong("FILM_ID"));
@@ -48,7 +50,6 @@ class FilmDBStorageTests {
             film.setDescription(rs.getString("DESCRIPTION"));
             film.setReleaseDate(rs.getDate("RELEAS_DATE").toLocalDate());
             film.setDuration(Duration.ofMinutes(rs.getInt("DURATION")));
-            // MPA и жанры можно оставить пустыми или подставить фиктивные
             return film;
         };
         filmStorage = new FilmDBStorage(jdbcTemplate, mapper, genreRowMapper);
