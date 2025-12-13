@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dal;
 
+import jakarta.persistence.ManyToOne;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -66,6 +67,8 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
         WHERE FILM_ID = ?
         """;
 
+    private static final String LOAD_DIRECTORS = "SELECT DIRECTOR_ID, FILM_ID FROM DIRECTORS_FILMS";
+
     // ---------- deps ----------
 
     private final GenreRowMapper genreRowMapper;
@@ -75,6 +78,20 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
                          GenreRowMapper genreRowMapper) {
         super(jdbc, filmRowMapper);
         this.genreRowMapper = genreRowMapper;
+    }
+
+    private Map<Long, Set<Long>> loadDirectors() {
+        return jdbc.query(LOAD_DIRECTORS, rs -> {
+            Map<Long, Set<Long>> map = new HashMap<>();
+
+            while (rs.next()) {
+                long filmId = rs.getLong("FILM_ID");
+                long directorId = rs.getLong("DIRECTOR_ID");
+
+                map.computeIfAbsent(filmId, f -> new HashSet<>()).add(directorId);
+            }
+            return map;
+        });
     }
 
     // ---------- CRUD ----------

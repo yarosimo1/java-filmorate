@@ -46,6 +46,7 @@ public final class FilmMapper {
 
 
         dto.setLikes(film.getWhoLikes());
+        dto.setDirectors(film.getDirectors());
 
         return dto;
     }

@@ -25,6 +25,7 @@ import java.util.Set;
 @Data
 public class FilmDto {
     private Set<Long> likes = new HashSet<>();
+    private Set<Long> directors = new HashSet<>();
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
     @NotNull
