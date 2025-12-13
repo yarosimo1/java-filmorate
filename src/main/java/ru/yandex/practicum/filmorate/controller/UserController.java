@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.service.user.RecommendationService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
@@ -19,6 +21,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
     @GetMapping
     public Collection<UserDto> getUsers() {
@@ -63,5 +66,10 @@ public class UserController {
     @GetMapping("/{userId}/friends/common/{otherId}")
     public List<UserDto> getCommonFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         return userService.getCommonFriends(userId, otherId);
+    }
+
+    @GetMapping("{userId}/recommendations")
+    public List<FilmDto> getRecommendations(@PathVariable Long userId) {
+        return recommendationService.getRecommendations(userId);
     }
 }
