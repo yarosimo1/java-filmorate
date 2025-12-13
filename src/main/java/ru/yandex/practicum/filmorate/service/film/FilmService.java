@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -27,6 +28,7 @@ public class FilmService {
     private final GenreService genreService;
     private final RatingService ratingService;
     private final UserService userService;
+    private final DirectorService directorService;
 
     public List<FilmDto> getAllFilms() {
         log.info("Получен запрос на получение всех фильмов");
