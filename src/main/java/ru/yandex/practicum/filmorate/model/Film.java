@@ -27,7 +27,7 @@ public class Film {
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
     private final Set<Long> whoLikes = new HashSet<>();
-    @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Жанр не может быть пустым")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Жанр не может быть пустым")
     private Set<Genre> genres = new HashSet<>();
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
@@ -44,7 +44,7 @@ public class Film {
     @JsonSerialize(using = DurationToSecondsSerializer.class)
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
-    @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Рейтинг не может быть пустым")
+    @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Рейтинг не может быть пустым")
     private Rating mpa;
 
     public boolean addLike(@NotNull @Positive Long id) {
