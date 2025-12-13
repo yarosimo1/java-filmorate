@@ -114,8 +114,8 @@ public class UserService {
         Set<Long> friendIds = user.getFriendships();
 
         return friendIds.stream().map(id ->
-                userDBStorage.findById(id)
-                        .orElse(null))
+                        userDBStorage.findById(id)
+                                .orElse(null))
                 .filter(Objects::nonNull)
                 .map(UserMapper::mapToDto)
                 .collect(Collectors.toList());
