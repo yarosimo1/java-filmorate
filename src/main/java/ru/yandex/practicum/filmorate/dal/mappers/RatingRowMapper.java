@@ -11,7 +11,10 @@ import java.sql.SQLException;
 public class RatingRowMapper implements RowMapper<Rating> {
     @Override
     public Rating mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Rating rating = Rating.builder().id(rs.getLong("RATING_ID")).name(rs.getString("NAME")).build();
+        Rating rating = Rating.builder()
+                .id(rs.getLong("RATING_ID"))
+                .name(rs.getString("NAME"))
+                .build();
         return rating;
     }
 }

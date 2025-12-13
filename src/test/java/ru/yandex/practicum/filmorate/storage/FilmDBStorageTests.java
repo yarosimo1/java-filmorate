@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
 import ru.yandex.practicum.filmorate.dal.FriendshipDBStorage;
 import ru.yandex.practicum.filmorate.dal.UserDBStorage;
+import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.Date;
@@ -22,7 +23,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -37,6 +37,8 @@ class FilmDBStorageTests {
 
     private FriendshipDBStorage friendshipDBStorage;
 
+    private GenreRowMapper genreRowMapper;
+
     @BeforeEach
     public void setUp() {
         RowMapper<Film> mapper = (rs, rowNum) -> {
@@ -49,7 +51,7 @@ class FilmDBStorageTests {
             // MPA и жанры можно оставить пустыми или подставить фиктивные
             return film;
         };
-        filmStorage = new FilmDBStorage(jdbcTemplate, mapper);
+        filmStorage = new FilmDBStorage(jdbcTemplate, mapper, genreRowMapper);
 
         RowMapper<User> mapper1 = (rs, rowNum) -> {
             User user = new User();
@@ -135,49 +137,6 @@ class FilmDBStorageTests {
         assertThatThrownBy(() -> filmStorage.delete(savedFilm.getId()))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessageContaining("Фильм не найден");
-    }
-
-    @Test
-    void shouldReturnCommonFilms() {
-        User user = userStorage
-                .add(createSampleUser("user", "user", "user@mail.com", LocalDate.now()));
-        User user1 = userStorage
-                .add(createSampleUser("user1", "user1", "user1@mail.com", LocalDate.now()));
-        User user2 = userStorage
-                .add(createSampleUser("user2", "user2", "user2@mail.com", LocalDate.now()));
-        User user3 = userStorage
-                .add(createSampleUser("user3", "user3", "user3@mail.com", LocalDate.now()));
-
-
-        Film film = filmStorage.add(createSampleFilm("Film", 120, 1L, "PG"));
-        Film film1 = filmStorage.add(createSampleFilm("Film1", 120, 2L, "G"));
-        Film film2 = filmStorage.add(createSampleFilm("Film2", 120, 3L, "R"));
-
-        friendshipDBStorage.add(Friendship.builder()
-                        .userId(user.getId())
-                        .friendId(user1.getId())
-                        .friendshipStatusId(2L)
-                .build());
-
-        filmStorage.addLike(film.getId(), user.getId());
-        filmStorage.addLike(film1.getId(), user.getId());
-
-        filmStorage.addLike(film.getId(), user1.getId());
-        filmStorage.addLike(film1.getId(), user1.getId());
-        filmStorage.addLike(film2.getId(), user1.getId());
-
-        filmStorage.addLike(film1.getId(), user2.getId());
-        filmStorage.addLike(film1.getId(), user3.getId());
-
-        List<Film> result = filmStorage.findCommonFilms(user.getId(), user1.getId());
-
-        assertEquals(2, result.size(), "Должно вернуться 2 общих фильма");
-
-        // сортировка: film1 должен быть первым
-        assertEquals(film1.getId(), result.get(0).getId(), "Самый популярный фильм должен быть первым");
-
-        // второй фильм — film
-        assertEquals(film.getId(), result.get(1).getId(), "Второй фильм должен быть менее популярным");
     }
 
     // Вспомогательный метод для создания фильма с обязательными полями

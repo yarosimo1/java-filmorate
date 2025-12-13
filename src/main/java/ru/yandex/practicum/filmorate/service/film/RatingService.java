@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.RatingDBStorage;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
@@ -17,12 +16,14 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class RatingService {
-    @Qualifier("RatingDBStorage")
     private final RatingDBStorage ratingDBStorage;
 
     public Collection<RatingDto> getRatings() {
         log.info("Получен запрос на получение всех рейтингов");
-        return ratingDBStorage.findAll().stream().map(RatingMapper::mapToDto).collect(Collectors.toList());
+        return ratingDBStorage.findAll()
+                .stream()
+                .map(RatingMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     public RatingDto getRatingById(Long id) {
