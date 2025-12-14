@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
@@ -154,9 +155,10 @@ public class FilmService {
     }
 
     public List<FilmDto> getDirectorFilms(long id, String sortBy) {
+        DirectorDto directorDto = directorService.findById(id);
         return switch (sortBy) {
-            case "year" -> getDirectorFilmsByYear(id);
-            case "likes" -> getDirectorFilmsByLikes(id);
+            case "year" -> getDirectorFilmsByYear(directorDto.getId());
+            case "likes" -> getDirectorFilmsByLikes(directorDto.getId());
             default -> throw new ConditionsNotMetExceptions("Неверные параметры запроса");
         };
     }
