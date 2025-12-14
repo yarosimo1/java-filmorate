@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.director.DirectorCreateDto;
 import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
+import ru.yandex.practicum.filmorate.dto.director.DirectorUpdateDto;
 import ru.yandex.practicum.filmorate.service.film.DirectorService;
 
 import java.util.List;
@@ -25,12 +27,12 @@ public class DirectorController {
     }
 
     @PostMapping
-    public DirectorDto addDirector(@RequestBody DirectorDto directorDto) {
+    public DirectorDto addDirector(@RequestBody DirectorCreateDto directorDto) {
         return directorService.addDirector(directorDto);
     }
 
     @PutMapping
-    public DirectorDto updateDirector(@RequestBody DirectorDto directorDto) {
+    public DirectorDto updateDirector(@RequestBody DirectorUpdateDto directorDto) {
         return directorService.updateDirector(directorDto);
     }
 

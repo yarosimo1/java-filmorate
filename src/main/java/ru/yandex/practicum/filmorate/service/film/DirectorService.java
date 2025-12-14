@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.DirectorDBStorage;
+import ru.yandex.practicum.filmorate.dto.director.DirectorCreateDto;
 import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
+import ru.yandex.practicum.filmorate.dto.director.DirectorUpdateDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -27,12 +29,12 @@ public class DirectorService {
         return DirectorMapper.mapToDto(director);
     }
 
-    public DirectorDto addDirector(DirectorDto directorDto) {
+    public DirectorDto addDirector(DirectorCreateDto directorDto) {
         Director director = DirectorMapper.mapToDirector(directorDto);
         return DirectorMapper.mapToDto(directorDBStorage.add(director));
     }
 
-    public DirectorDto updateDirector(DirectorDto directorDto) {
+    public DirectorDto updateDirector(DirectorUpdateDto directorDto) {
         Director director = DirectorMapper.mapToDirector(directorDto);
         return DirectorMapper.mapToDto(directorDBStorage.update(director));
     }
