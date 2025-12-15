@@ -13,17 +13,17 @@ public class EventDBStrorage extends BaseRepository<Event> {
         super(jdbc, mapper);
     }
 
-    private final String INSERT = "INSERT INTO EVENTS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, EVENT_TIMESTAMP) " +
+    private final String INSERT_EVENT = "INSERT INTO EVENTS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, EVENT_TIMESTAMP) " +
             "VALUES (?, ?, ?, ?, ?)";
-    private final String SELECT = "SELECT * FROM EVENTS WHERE USER_ID = ?";
+    private final String SELECT_EVENT = "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
     public List<Event> findAll(long userId) {
-        return findMany(SELECT, userId);
+        return findMany(SELECT_EVENT, userId);
     }
 
     public Event add(Event event) {
         long id = insert(
-                INSERT,
+                INSERT_EVENT,
                 event.getUserId(),
                 event.getEventType(),
                 event.getOperation(),
