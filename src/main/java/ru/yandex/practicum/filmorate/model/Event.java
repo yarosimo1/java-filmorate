@@ -7,8 +7,6 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.method.OnCreate;
 import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
-import java.time.Instant;
-
 @Data
 @Builder
 public class Event {
