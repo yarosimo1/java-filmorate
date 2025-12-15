@@ -9,9 +9,12 @@ import ru.yandex.practicum.filmorate.dto.review.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewUpdateDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.user.EventService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ public class ReviewService {
     private final ReviewDBStorage reviewDBStorage;
     private final UserService userService;
     private final FilmService filmService;
+    private final EventService eventService;
 
     public ReviewDto getReviewById(Long id) {
         log.info("Получен запрос на получение отзыва id={}", id);
@@ -55,6 +59,16 @@ public class ReviewService {
 
         Review review = ReviewMapper.mapToReview(dto);
         Review createdReview = reviewDBStorage.add(review);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(review.getUserId())
+                        .eventType("REVIEW")
+                        .operation("ADD")
+                        .entityId(review.getReviewId())
+                        .build()
+        );
         return ReviewMapper.mapToReviewDto(createdReview);
     }
 
@@ -67,12 +81,35 @@ public class ReviewService {
         ReviewMapper.updateReviewFields(existingReview, dto);
 
         reviewDBStorage.update(existingReview);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(existingReview.getUserId())
+                        .eventType("REVIEW")
+                        .operation("UPDATE")
+                        .entityId(existingReview.getReviewId())
+                        .build()
+        );
         return ReviewMapper.mapToReviewDto(existingReview);
     }
 
     public void deleteReview(Long id) {
         log.info("Удаление ревью с id={}", id);
+        Review existingReview = reviewDBStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ревью с id=" + id + " не найден"));
+
         reviewDBStorage.delete(id);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(existingReview.getUserId())
+                        .eventType("REVIEW")
+                        .operation("REMOVE")
+                        .entityId(existingReview.getReviewId())
+                        .build()
+        );
     }
 
     public ReviewDto addLike(Long reviewId, Long userId) {
@@ -92,6 +129,16 @@ public class ReviewService {
 
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType("LIKE")
+                        .operation("ADD")
+                        .entityId(reviewId)
+                        .build()
+        );
 
         return ReviewMapper.mapToReviewDto(review);
     }
@@ -130,6 +177,16 @@ public class ReviewService {
         int useful = review.getUseful() - 1;
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType("LIKE")
+                        .operation("REMOVE")
+                        .entityId(reviewId)
+                        .build()
+        );
 
         return ReviewMapper.mapToReviewDto(review);
     }
