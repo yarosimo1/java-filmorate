@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.PositiveDuration;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.json.DurationToSecondsSerializer;
@@ -23,6 +24,7 @@ import java.util.Set;
 @Data
 public class FilmCreateDto {
     private Set<Long> likes = new HashSet<>();
+    private Set<DirectorDto> directors = new HashSet<>();
     @NotNull
     private Set<GenreDto> genres = new HashSet<>();
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")

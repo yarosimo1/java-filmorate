@@ -4,17 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
+import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetExceptions;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -27,6 +32,7 @@ public class FilmService {
     private final GenreService genreService;
     private final RatingService ratingService;
     private final UserService userService;
+    private final DirectorService directorService;
 
     public List<FilmDto> getAllFilms() {
         log.info("Получен запрос на получение всех фильмов");
@@ -51,7 +57,7 @@ public class FilmService {
         userService.getUserDBStorage().findById(friendId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + friendId + " не найден"));
 
-        Map<Long, Film> films =  filmDBStorage.getFilms();
+        Map<Long, Film> films = filmDBStorage.getFilms();
 
         return films.values().stream()
                 .filter(film -> film.getWhoLikes().contains(userId)
@@ -145,6 +151,29 @@ public class FilmService {
                 .sorted((a, b) -> b.getWhoLikes().size() - a.getWhoLikes().size())
                 .limit(count)
                 .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
+
+    public List<FilmDto> getDirectorFilms(long id, String sortBy) {
+        DirectorDto directorDto = directorService.findById(id);
+        return switch (sortBy) {
+            case "year" -> getDirectorFilmsByYear(directorDto.getId());
+            case "likes" -> getDirectorFilmsByLikes(directorDto.getId());
+            default -> throw new ConditionsNotMetExceptions("Неверные параметры запроса");
+        };
+    }
+
+    private List<FilmDto> getDirectorFilmsByYear(long id) {
+        return getAllFilms().stream()
+                .filter(film -> film.getDirectors().stream().anyMatch(d -> d.getId().equals(id)))
+                .sorted(Comparator.comparingInt(a -> a.getReleaseDate().getYear()))
+                .toList();
+    }
+
+    private List<FilmDto> getDirectorFilmsByLikes(long id) {
+        return getAllFilms().stream()
+                .filter(film -> film.getDirectors().stream().anyMatch(d -> d.getId().equals(id)))
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList();
     }
 

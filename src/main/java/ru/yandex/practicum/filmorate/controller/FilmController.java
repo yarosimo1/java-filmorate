@@ -38,6 +38,12 @@ public class FilmController {
         return filmService.getPopularFilms(count, genreId, year);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getDirectorFilms(@PathVariable Long directorId,
+                                          @RequestParam(defaultValue = "likes") String sortBy) {
+        return filmService.getDirectorFilms(directorId, sortBy);
+    }
+
     @PostMapping
     public FilmDto postFilm(@Validated(OnCreate.class) @RequestBody FilmCreateDto film) {
         return filmService.createFilm(film);

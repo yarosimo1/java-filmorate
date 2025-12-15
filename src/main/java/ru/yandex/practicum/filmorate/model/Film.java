@@ -27,6 +27,7 @@ public class Film {
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
     private final Set<Long> whoLikes = new HashSet<>();
+    private Set<Director> directors = new HashSet<>();
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Жанр не может быть пустым")
     private Set<Genre> genres = new HashSet<>();
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
