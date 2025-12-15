@@ -13,9 +13,9 @@ public class EventDBStrorage extends BaseRepository<Event> {
         super(jdbc, mapper);
     }
 
-    private final String INSERT_EVENT = "INSERT INTO EVENTS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, EVENT_TIMESTAMP) " +
+    private static final String INSERT_EVENT = "INSERT INTO EVENTS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID, EVENT_TIMESTAMP) " +
             "VALUES (?, ?, ?, ?, ?)";
-    private final String SELECT_EVENT = "SELECT * FROM EVENTS WHERE USER_ID = ?";
+    private static final String SELECT_EVENT = "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
     public List<Event> findAll(long userId) {
         return findMany(SELECT_EVENT, userId);
