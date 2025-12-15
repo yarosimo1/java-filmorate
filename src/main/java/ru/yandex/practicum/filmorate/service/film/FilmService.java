@@ -13,9 +13,12 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetExceptions;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.user.EventService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,7 @@ public class FilmService {
     private final RatingService ratingService;
     private final UserService userService;
     private final DirectorService directorService;
+    private final EventService eventService;
 
     public List<FilmDto> getAllFilms() {
         log.info("Получен запрос на получение всех фильмов");
@@ -119,6 +123,16 @@ public class FilmService {
 
         film.addLike(userId);
 
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType("LIKE")
+                        .operation("ADD")
+                        .entityId(filmId)
+                        .build()
+        );
+
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -136,6 +150,16 @@ public class FilmService {
         filmDBStorage.deleteLike(filmId, userId);
 
         film.deleteLike(userId);
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType("LIKE")
+                        .operation("REMOVE")
+                        .entityId(filmId)
+                        .build()
+        );
 
         return FilmMapper.mapToFilmDto(film);
     }
