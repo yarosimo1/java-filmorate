@@ -88,15 +88,7 @@ public class ReviewService {
         reviewDBStorage.addReaction(reviewId, userId, true);
 
         // а здесь уже обновляем useful
-        int useful = review.getUseful();
-
-        if (previousReaction != null && !previousReaction) {
-            // Был дизлайк, убираем его и добавляем лайк = 2
-            useful += 2;
-        } else if (previousReaction == null) {
-            // Реакции не было, просто лайк = +1
-            useful += 1;
-        }
+        int useful = review.getUseful() + calculateUsefulReaction(previousReaction, true);
 
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
@@ -117,15 +109,7 @@ public class ReviewService {
         reviewDBStorage.addReaction(reviewId, userId, false);
 
         // а здесь уже обновляем useful
-        int useful = review.getUseful();
-
-        if (previousReaction != null && previousReaction) {
-            // Был лайк, убираем его (-1) и добавляем дизлайк (-1) = -2
-            useful -= 2;
-        } else if (previousReaction == null) {
-            // Реакции не было, просто дизлайк = -1
-            useful -= 1;
-        }
+        int useful = review.getUseful() + calculateUsefulReaction(previousReaction, false);
 
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
@@ -165,5 +149,18 @@ public class ReviewService {
         review.setUseful(useful);
 
         return ReviewMapper.mapToReviewDto(review);
+    }
+
+    private int calculateUsefulReaction(Boolean previousReaction, boolean isLike) {
+        if (previousReaction == null)
+            // значит реакции еще не было
+            return isLike ? 1 : -1;
+
+        // та же реакция, ничего не меняем
+        if (previousReaction == isLike)
+            return 0;
+
+        // Смена реакции: лайк - дизлайк = -2, дизлайк - лайк = +2
+        return isLike ? 2 : -2;
     }
 }
