@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -52,10 +53,10 @@ public class SearchService {
     private void validateParameterString(String by) {
         String[] parameters = by.split(",");
         if (parameters.length < 1 || parameters.length > 2)
-            throw new RuntimeException("В поиск передано неверное количество параметров");
+            throw new ConditionsNotMetException("В поиск передано неверное количество параметров");
         for (String parameter : parameters) {
             if (!isValidParameter(parameter))
-                throw new RuntimeException("В поиск передан недопустимый параметр");
+                throw new ConditionsNotMetException("В поиск передан недопустимый параметр");
         }
     }
 
