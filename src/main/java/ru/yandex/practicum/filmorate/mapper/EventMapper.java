@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.model.Event;
 
 
-public class EventMapper {
+public final class EventMapper {
     public static Event mapToEvent(EventCreteDto dto) {
         return Event.builder()
                 .timestamp(dto.getTimestamp())

@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -105,8 +107,8 @@ public class UserService {
                 Event.builder()
                     .timestamp(Instant.now().toEpochMilli())
                     .userId(userId)
-                    .eventType("FRIEND")
-                    .operation("ADD")
+                    .eventType(EventType.FRIEND)
+                    .operation(Operation.ADD)
                     .entityId(friendId)
                 .build()
         );
@@ -126,8 +128,8 @@ public class UserService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(userId)
-                        .eventType("FRIEND")
-                        .operation("REMOVE")
+                        .eventType(EventType.FRIEND)
+                        .operation(Operation.REMOVE)
                         .entityId(friendId)
                         .build()
         );

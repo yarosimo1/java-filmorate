@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.dal.ReviewDBStorage;
 import ru.yandex.practicum.filmorate.dto.review.ReviewCreateDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewUpdateDto;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -64,8 +66,8 @@ public class ReviewService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(review.getUserId())
-                        .eventType("REVIEW")
-                        .operation("ADD")
+                        .eventType(EventType.REVIEW)
+                        .operation(Operation.ADD)
                         .entityId(review.getReviewId())
                         .build()
         );
@@ -86,8 +88,8 @@ public class ReviewService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(existingReview.getUserId())
-                        .eventType("REVIEW")
-                        .operation("UPDATE")
+                        .eventType(EventType.REVIEW)
+                        .operation(Operation.UPDATE)
                         .entityId(existingReview.getReviewId())
                         .build()
         );
@@ -105,8 +107,8 @@ public class ReviewService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(existingReview.getUserId())
-                        .eventType("REVIEW")
-                        .operation("REMOVE")
+                        .eventType(EventType.REVIEW)
+                        .operation(Operation.REMOVE)
                         .entityId(existingReview.getReviewId())
                         .build()
         );
@@ -139,8 +141,8 @@ public class ReviewService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(userId)
-                        .eventType("LIKE")
-                        .operation("ADD")
+                        .eventType(EventType.LIKE)
+                        .operation(Operation.ADD)
                         .entityId(reviewId)
                         .build()
         );
@@ -199,8 +201,8 @@ public class ReviewService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(userId)
-                        .eventType("LIKE")
-                        .operation("REMOVE")
+                        .eventType(EventType.LIKE)
+                        .operation(Operation.REMOVE)
                         .entityId(reviewId)
                         .build()
         );

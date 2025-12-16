@@ -25,8 +25,8 @@ public class EventDBStrorage extends BaseRepository<Event> {
         long id = insert(
                 INSERT_EVENT,
                 event.getUserId(),
-                event.getEventType(),
-                event.getOperation(),
+                event.getEventType().toString(),
+                event.getOperation().toString(),
                 event.getEntityId(),
                 event.getTimestamp()
         );

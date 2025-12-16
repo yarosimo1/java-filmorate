@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetExceptions;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -127,8 +129,8 @@ public class FilmService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(userId)
-                        .eventType("LIKE")
-                        .operation("ADD")
+                        .eventType(EventType.LIKE)
+                        .operation(Operation.ADD)
                         .entityId(filmId)
                         .build()
         );
@@ -155,8 +157,8 @@ public class FilmService {
                 Event.builder()
                         .timestamp(Instant.now().toEpochMilli())
                         .userId(userId)
-                        .eventType("LIKE")
-                        .operation("REMOVE")
+                        .eventType(EventType.LIKE)
+                        .operation(Operation.REMOVE)
                         .entityId(filmId)
                         .build()
         );
