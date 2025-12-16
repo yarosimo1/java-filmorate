@@ -122,6 +122,11 @@ public class ReviewService {
         // Проверяем была ли предыдущая реакция
         Boolean previousReaction = reviewDBStorage.getReaction(reviewId, userId);
 
+        // Если уже лайк - ничего не делаем
+        if (previousReaction != null && previousReaction) {
+            return ReviewMapper.mapToReviewDto(review);
+        }
+
         reviewDBStorage.addReaction(reviewId, userId, true);
 
         // а здесь уже обновляем useful
@@ -153,6 +158,11 @@ public class ReviewService {
         // Проверяем была ли предыдущая реакция
         Boolean previousReaction = reviewDBStorage.getReaction(reviewId, userId);
 
+        // Если уже дизлайк - ничего не делаем
+        if (previousReaction != null && !previousReaction) {
+            return ReviewMapper.mapToReviewDto(review);
+        }
+
         reviewDBStorage.addReaction(reviewId, userId, false);
 
         // а здесь уже обновляем useful
@@ -170,6 +180,13 @@ public class ReviewService {
         Review review = reviewDBStorage.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
         userService.getUserById(userId);  // проверка существования пользователя
+
+        Boolean previousReaction = reviewDBStorage.getReaction(reviewId, userId);
+
+        // Если реакции не было или это дизлайк - ничего не удаляем
+        if (previousReaction == null || !previousReaction) {
+            return ReviewMapper.mapToReviewDto(review);
+        }
 
         reviewDBStorage.removeReaction(reviewId, userId);
 
@@ -197,6 +214,13 @@ public class ReviewService {
         Review review = reviewDBStorage.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
         userService.getUserById(userId);  // проверка существования пользователя
+
+        Boolean previousReaction = reviewDBStorage.getReaction(reviewId, userId);
+
+        // Если реакции не было или это лайк - ничего не удаляем
+        if (previousReaction == null || previousReaction) {
+            return ReviewMapper.mapToReviewDto(review);
+        }
 
         reviewDBStorage.removeReaction(reviewId, userId);
 
