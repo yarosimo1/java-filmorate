@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import ru.yandex.practicum.filmorate.dto.event.EventCreteDto;
+import ru.yandex.practicum.filmorate.dto.event.EventCreateDto;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.model.Event;
 
 
 public final class EventMapper {
-    public static Event mapToEvent(EventCreteDto dto) {
+    public static Event mapToEvent(EventCreateDto dto) {
         return Event.builder()
                 .timestamp(dto.getTimestamp())
                 .entityId(dto.getEntityId())

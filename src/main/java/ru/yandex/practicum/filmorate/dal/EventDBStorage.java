@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.model.Event;
 import java.util.*;
 
 @Repository
-public class EventDBStrorage extends BaseRepository<Event> {
-    public EventDBStrorage(JdbcTemplate jdbc, RowMapper<Event> mapper) {
+public class EventDBStorage extends BaseRepository<Event> {
+    public EventDBStorage(JdbcTemplate jdbc, RowMapper<Event> mapper) {
         super(jdbc, mapper);
     }
 

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.EventDBStrorage;
+import ru.yandex.practicum.filmorate.dal.EventDBStorage;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.mapper.EventMapper;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -14,16 +14,16 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class EventService {
-    private EventDBStrorage eventDBStrorage;
+    private EventDBStorage eventDBStorage;
 
     public List<EventDto> getEventsByIdUser(long userId) {
-        return eventDBStrorage.findAll(userId)
+        return eventDBStorage.findAll(userId)
                 .stream()
                 .map(EventMapper::mapToEventDto)
                 .toList();
     }
 
     public EventDto addEventToUser(Event event) {
-        return EventMapper.mapToEventDto(eventDBStrorage.add(event));
+        return EventMapper.mapToEventDto(eventDBStorage.add(event));
     }
 }
