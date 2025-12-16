@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetExceptions;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -33,6 +33,7 @@ public class FilmService {
     private final RatingService ratingService;
     private final UserService userService;
     private final DirectorService directorService;
+    private final SearchService searchService;
 
     public List<FilmDto> getAllFilms() {
         log.info("Получен запрос на получение всех фильмов");
@@ -159,8 +160,19 @@ public class FilmService {
         return switch (sortBy) {
             case "year" -> getDirectorFilmsByYear(directorDto.getId());
             case "likes" -> getDirectorFilmsByLikes(directorDto.getId());
-            default -> throw new ConditionsNotMetExceptions("Неверные параметры запроса");
+            default -> throw new ConditionsNotMetException("Неверные параметры запроса");
         };
+    }
+
+    public List<FilmDto> getFilmsBySearch(String query, String by) {
+        if (query == null && by == null)
+            return getAllFilms().stream()
+                    .sorted(Comparator.comparing(f -> f.getLikes().size()))
+                    .toList();
+        return searchService.getFilmsByQuery(query, by).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .sorted(Comparator.comparing(f -> f.getLikes().size()))
+                .toList();
     }
 
     private List<FilmDto> getDirectorFilmsByYear(long id) {
