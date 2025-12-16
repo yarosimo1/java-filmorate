@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
@@ -71,5 +72,10 @@ public class UserController {
     @GetMapping("{userId}/recommendations")
     public List<FilmDto> getRecommendations(@PathVariable Long userId) {
         return recommendationService.getRecommendations(userId);
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<EventDto> getEvents(@PathVariable Long userId) {
+        return userService.getEvents(userId);
     }
 }

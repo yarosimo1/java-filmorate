@@ -5,16 +5,21 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.UserDBStorage;
+import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +33,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserDBStorage userDBStorage;
     private final FriendshipService friendshipService;
+    private final EventService eventService;
 
     public Collection<UserDto> getUsers() {
         return userDBStorage.findAll().stream()
@@ -40,6 +46,10 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден с ID: " + userId));
 
         return UserMapper.mapToDto(user);
+    }
+
+    public List<EventDto> getEvents(long userId) {
+        return eventService.getEventsByIdUser(userId);
     }
 
     public UserDto postUser(UserCreateDto dto) {
@@ -93,6 +103,16 @@ public class UserService {
         User user = userDBStorage.findById(userId).get();
         User friend = userDBStorage.findById(friendId).get();
 
+        eventService.addEventToUser(
+                Event.builder()
+                    .timestamp(Instant.now().toEpochMilli())
+                    .userId(userId)
+                    .eventType(EventType.FRIEND)
+                    .operation(Operation.ADD)
+                    .entityId(friendId)
+                .build()
+        );
+
         return List.of(UserMapper.mapToDto(user), UserMapper.mapToDto(friend));
     }
 
@@ -103,6 +123,16 @@ public class UserService {
         friendshipService.deleteFriendship(userId, friendId);
 
         User user = userDBStorage.findById(userId).get();
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType(EventType.FRIEND)
+                        .operation(Operation.REMOVE)
+                        .entityId(friendId)
+                        .build()
+        );
         return UserMapper.mapToDto(user);
     }
 
