@@ -167,11 +167,11 @@ public class FilmService {
     public List<FilmDto> getFilmsBySearch(String query, String by) {
         if (query == null && by == null)
             return getAllFilms().stream()
-                    .sorted(Comparator.comparing(f -> f.getLikes().size()))
+                    .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                     .toList();
         return searchService.getFilmsByQuery(query, by).stream()
                 .map(FilmMapper::mapToFilmDto)
-                .sorted(Comparator.comparing(f -> f.getLikes().size()))
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList();
     }
 
