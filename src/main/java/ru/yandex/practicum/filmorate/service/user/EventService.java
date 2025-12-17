@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.EventDBStorage;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.EventMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 
@@ -17,8 +18,12 @@ public class EventService {
     private EventDBStorage eventDBStorage;
 
     public List<EventDto> getEventsByIdUser(long userId) {
-        return eventDBStorage.findAll(userId)
-                .stream()
+        List<Event> events = eventDBStorage.findAll(userId);
+
+        if (events.isEmpty())
+            throw new NotFoundException("Фид пользователя не найден");
+
+        return events.stream()
                 .map(EventMapper::mapToEventDto)
                 .toList();
     }
