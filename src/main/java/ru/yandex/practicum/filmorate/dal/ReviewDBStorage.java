@@ -17,9 +17,9 @@ public class ReviewDBStorage extends BaseRepository<Review> implements ReviewSto
             "ORDER BY USEFUL DESC LIMIT ?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM REVIEW ORDER BY USEFUL DESC LIMIT ?";
     private static final String INSERT_QUERY = "INSERT INTO REVIEW (CONTENT, IS_POSITIVE, USER_ID, FILM_ID, USEFUL) " +
-        "VALUES (?, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_QUERY = "UPDATE REVIEW SET CONTENT = ?, IS_POSITIVE = ? " +
-        "WHERE REVIEW_ID = ?";
+            "WHERE REVIEW_ID = ?";
     private static final String DELETE_QUERY = "DELETE FROM REVIEW WHERE REVIEW_ID = ?";
 
     private static final String INSERT_REACTION_QUERY = "MERGE INTO REVIEW_REACTIONS (REVIEW_ID, USER_ID, IS_LIKE) " +
