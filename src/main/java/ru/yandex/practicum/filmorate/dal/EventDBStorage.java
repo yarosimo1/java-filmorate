@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Event;
 
-import java.util.*;
+import java.util.List;
 
 @Repository
 public class EventDBStorage extends BaseRepository<Event> {
