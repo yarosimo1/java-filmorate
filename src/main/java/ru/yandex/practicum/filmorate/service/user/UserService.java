@@ -105,12 +105,12 @@ public class UserService {
 
         eventService.addEventToUser(
                 Event.builder()
-                    .timestamp(Instant.now().toEpochMilli())
-                    .userId(userId)
-                    .eventType(EventType.FRIEND)
-                    .operation(Operation.ADD)
-                    .entityId(friendId)
-                .build()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType(EventType.FRIEND)
+                        .operation(Operation.ADD)
+                        .entityId(friendId)
+                        .build()
         );
 
         return List.of(UserMapper.mapToDto(user), UserMapper.mapToDto(friend));
@@ -163,8 +163,7 @@ public class UserService {
     }
 
     private void validateUserIds(Long userId, Long otherId) {
-        if (userId == null || otherId == null || userId <= 0
-                || otherId <= 0 || Objects.equals(userId, otherId)) {
+        if (userId == null || otherId == null || Objects.equals(userId, otherId)) {
             throw new ValidationException("Некорректные ID");
         }
 
