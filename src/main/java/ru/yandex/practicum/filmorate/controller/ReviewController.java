@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.review.ReviewCreateDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewUpdateDto;
 import ru.yandex.practicum.filmorate.service.film.ReviewService;
+import ru.yandex.practicum.filmorate.validation.method.OnCreate;
+import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 
 import java.util.List;
 
@@ -28,12 +31,12 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ReviewDto createReview(@RequestBody ReviewCreateDto dto) {
+    public ReviewDto createReview(@Validated(OnCreate.class) @RequestBody ReviewCreateDto dto) {
         return reviewService.createReview(dto);
     }
 
     @PutMapping
-    public ReviewDto updateReview(@RequestBody ReviewUpdateDto dto) {
+    public ReviewDto updateReview(@Validated(OnUpdate.class) @RequestBody ReviewUpdateDto dto) {
         return reviewService.updateReview(dto);
     }
 

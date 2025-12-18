@@ -137,16 +137,6 @@ public class ReviewService {
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
 
-        eventService.addEventToUser(
-                Event.builder()
-                        .timestamp(Instant.now().toEpochMilli())
-                        .userId(userId)
-                        .eventType(EventType.LIKE)
-                        .operation(Operation.ADD)
-                        .entityId(reviewId)
-                        .build()
-        );
-
         return ReviewMapper.mapToReviewDto(review);
     }
 
@@ -196,16 +186,6 @@ public class ReviewService {
         int useful = review.getUseful() - 1;
         reviewDBStorage.updateUseful(reviewId, useful);
         review.setUseful(useful);
-
-        eventService.addEventToUser(
-                Event.builder()
-                        .timestamp(Instant.now().toEpochMilli())
-                        .userId(userId)
-                        .eventType(EventType.LIKE)
-                        .operation(Operation.REMOVE)
-                        .entityId(reviewId)
-                        .build()
-        );
 
         return ReviewMapper.mapToReviewDto(review);
     }

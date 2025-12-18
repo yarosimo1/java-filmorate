@@ -9,9 +9,9 @@ import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.Operation;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -216,7 +216,7 @@ public class FilmService {
     }
 
     private void validateIds(Long filmId, Long userId) {
-        if (filmId == null || filmId <= 0 || userId == null || userId <= 0) {
+        if (filmId == null || userId == null) {
             throw new ValidationException("Некорректный id");
         }
     }
