@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDBStorage;
 import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.model.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.user.EventService;
@@ -181,37 +181,41 @@ public class FilmService {
                 .toList();
     }
 
-    public List<FilmDto> getDirectorFilms(long id, String sortBy) {
+    public List<FilmDto> getDirectorFilmsSorted(long id, String sortBy) {
         DirectorDto directorDto = directorService.findById(id);
         return switch (sortBy) {
-            case "year" -> getDirectorFilmsByYear(directorDto.getId());
-            case "likes" -> getDirectorFilmsByLikes(directorDto.getId());
+            case "year" -> sortFilmsByYear(getDirectorFilmsRaw(directorDto.getId()));
+            case "likes" -> sortFilmsByLikes(getDirectorFilmsRaw(directorDto.getId()));
             default -> throw new ConditionsNotMetException("Неверные параметры запроса");
         };
     }
 
     public List<FilmDto> getFilmsBySearch(String query, String by) {
         if (query == null && by == null)
-            return getAllFilms().stream()
-                    .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
-                    .toList();
-        return searchService.getFilmsByQuery(query, by).stream()
+            return sortFilmsByLikes(getAllFilms());
+
+        List<FilmDto> queriedFilms = searchService.getFilmsByQuery(query, by).stream()
                 .map(FilmMapper::mapToFilmDto)
+                .toList();
+
+        return sortFilmsByLikes(queriedFilms);
+    }
+
+    private List<FilmDto> sortFilmsByYear(List<FilmDto> films) {
+        return films.stream()
+                .sorted(Comparator.comparingInt(f -> f.getReleaseDate().getYear()))
+                .toList();
+    }
+
+    private List<FilmDto> sortFilmsByLikes(List<FilmDto> films) {
+        return films.stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList();
     }
 
-    private List<FilmDto> getDirectorFilmsByYear(long id) {
+    private List<FilmDto> getDirectorFilmsRaw(long id) {
         return getAllFilms().stream()
                 .filter(film -> film.getDirectors().stream().anyMatch(d -> d.getId().equals(id)))
-                .sorted(Comparator.comparingInt(a -> a.getReleaseDate().getYear()))
-                .toList();
-    }
-
-    private List<FilmDto> getDirectorFilmsByLikes(long id) {
-        return getAllFilms().stream()
-                .filter(film -> film.getDirectors().stream().anyMatch(d -> d.getId().equals(id)))
-                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList();
     }
 
