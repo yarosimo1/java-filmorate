@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.dtoMapper;
+package ru.yandex.practicum.filmorate.mapper.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Rating;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RatingMapper {
-
     public static Rating mapToRating(RatingCreateDto dto) {
         Rating rating = Rating.builder()
                 .name(dto.getName())

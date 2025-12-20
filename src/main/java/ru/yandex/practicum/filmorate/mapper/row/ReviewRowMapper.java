@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.rowMapper;
+package ru.yandex.practicum.filmorate.mapper.row;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 @Component
 public class ReviewRowMapper implements RowMapper<Review> {
-
     @Override
     public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Review.builder()

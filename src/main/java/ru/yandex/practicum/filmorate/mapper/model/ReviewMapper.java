@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.dtoMapper;
+package ru.yandex.practicum.filmorate.mapper.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReviewMapper {
-
     public static Review mapToReview(ReviewCreateDto dto) {
         return Review.builder()
                 .content(dto.getContent())

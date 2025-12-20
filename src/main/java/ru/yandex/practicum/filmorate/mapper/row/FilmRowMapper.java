@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.rowMapper;
+package ru.yandex.practicum.filmorate.mapper.row;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,6 @@ import java.time.Duration;
 
 @Component
 public class FilmRowMapper implements RowMapper<Film> {
-
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();

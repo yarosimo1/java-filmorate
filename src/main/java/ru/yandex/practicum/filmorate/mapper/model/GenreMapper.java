@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.dtoMapper;
+package ru.yandex.practicum.filmorate.mapper.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GenreMapper {
-
     public static Genre mapToGenre(GenreCreateDto dto) {
         Genre genre = Genre.builder()
                 .name(dto.getName())

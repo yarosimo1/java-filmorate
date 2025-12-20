@@ -1,9 +1,8 @@
-package ru.yandex.practicum.filmorate.mapper.dtoMapper;
+package ru.yandex.practicum.filmorate.mapper.model;
 
 import ru.yandex.practicum.filmorate.dto.event.EventCreateDto;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.model.Event;
-
 
 public final class EventMapper {
     public static Event mapToEvent(EventCreateDto dto) {

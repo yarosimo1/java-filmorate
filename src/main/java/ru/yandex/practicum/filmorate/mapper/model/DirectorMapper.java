@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper.dtoMapper;
+package ru.yandex.practicum.filmorate.mapper.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
