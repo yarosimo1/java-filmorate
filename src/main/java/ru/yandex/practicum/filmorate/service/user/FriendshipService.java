@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.storage.user.friendship.FriendshipDBStorage;
 import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.storage.user.friendship.FriendshipDBStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
