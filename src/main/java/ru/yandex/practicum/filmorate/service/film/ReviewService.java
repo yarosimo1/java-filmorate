@@ -3,14 +3,14 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.ReviewDBStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewDBStorage;
 import ru.yandex.practicum.filmorate.dto.review.ReviewCreateDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.review.ReviewUpdateDto;
 import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.mapper.model.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.user.EventService;
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class ReviewService {
-
     private final ReviewDBStorage reviewDBStorage;
     private final UserService userService;
     private final FilmService filmService;

@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/reviews")
 @AllArgsConstructor
 public class ReviewController {
-
     private final ReviewService reviewService;
 
     @GetMapping("/{id}")

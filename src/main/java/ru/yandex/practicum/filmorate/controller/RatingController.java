@@ -14,7 +14,6 @@ import java.util.Collection;
 @RequestMapping("/mpa")
 @AllArgsConstructor
 public class RatingController {
-
     private final RatingService ratingService;
 
     @GetMapping

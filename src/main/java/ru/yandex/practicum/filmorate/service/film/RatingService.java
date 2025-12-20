@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.RatingDBStorage;
+import ru.yandex.practicum.filmorate.storage.film.RatingDBStorage;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
-import ru.yandex.practicum.filmorate.mapper.RatingMapper;
+import ru.yandex.practicum.filmorate.mapper.model.RatingMapper;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.Collection;

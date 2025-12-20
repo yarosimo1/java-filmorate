@@ -2,12 +2,12 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.DirectorDBStorage;
+import ru.yandex.practicum.filmorate.storage.film.DirectorDBStorage;
 import ru.yandex.practicum.filmorate.dto.director.DirectorCreateDto;
 import ru.yandex.practicum.filmorate.dto.director.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.director.DirectorUpdateDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
+import ru.yandex.practicum.filmorate.mapper.model.DirectorMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
