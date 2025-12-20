@@ -1,15 +1,15 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.dal.mappers.DirectorRowMapper;
-import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
+import ru.yandex.practicum.filmorate.mapper.row.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.mapper.row.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,7 +91,7 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Film add(Film film) {
-        long id = insert(
+        long id = super.insert(
                 INSERT_FILM,
                 film.getDescription(),
                 film.getName(),
@@ -108,7 +108,7 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        update(
+        super.update(
                 UPDATE_FILM,
                 film.getDescription(),
                 film.getName(),
@@ -125,21 +125,19 @@ public class FilmDBStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Film delete(Long id) {
-        Film film = findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
+        Film film = findById(id).orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
 
-        //jdbc.update(DELETE_GENRES, id);
-        delete(DELETE_FILM, id);
+        super.delete(DELETE_FILM, id);
 
         return film;
     }
 
     public Optional<Film> findById(long id) {
-        return findOne(FIND_BY_ID, id).map(this::enrich);
+        return super.findOne(FIND_BY_ID, id).map(this::enrich);
     }
 
     public List<Film> findAll() {
-        List<Film> films = findMany(FIND_ALL);
+        List<Film> films = super.findMany(FIND_ALL);
         films.forEach(this::enrich);
         return films;
     }

@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,11 +26,11 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
     }
 
     public Optional<User> findByEmail(String email) {
-        return findOne(FIND_BY_EMAIL_QUERY, email);
+        return super.findOne(FIND_BY_EMAIL_QUERY, email);
     }
 
     public Optional<User> findById(long userId) {
-        Optional<User> userOpt = findOne(FIND_BY_ID_QUERY, userId);
+        Optional<User> userOpt = super.findOne(FIND_BY_ID_QUERY, userId);
 
         userOpt.ifPresent(user -> {
             Set<Long> friendIds = new HashSet<>(jdbc.query(FIND_USER_FRIENDSHIPS,
@@ -43,7 +43,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
     }
 
     public List<User> findAll() {
-        List<User> users = findMany(FIND_ALL_QUERY);
+        List<User> users = super.findMany(FIND_ALL_QUERY);
 
         if (users.isEmpty()) {
             return users;
@@ -67,7 +67,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public User add(User user) {
-        long id = insert(INSERT_QUERY,
+        long id = super.insert(INSERT_QUERY,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -78,7 +78,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public User update(User newUser) {
-        update(UPDATE_QUERY,
+        super.update(UPDATE_QUERY,
                 newUser.getEmail(),
                 newUser.getLogin(),
                 newUser.getName(),
@@ -92,7 +92,7 @@ public class UserDBStorage extends BaseRepository<User> implements UserStorage {
         User user = findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        delete(DELETE_QUERY, id);
+        super.delete(DELETE_QUERY, id);
         return user;
     }
 

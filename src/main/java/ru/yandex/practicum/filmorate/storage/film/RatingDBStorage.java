@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,15 +20,14 @@ public class RatingDBStorage extends BaseRepository<Rating> {
     }
 
     public Optional<Rating> findById(long genreId) {
-        return findOne(FIND_BY_ID_QUERY, genreId);
+        return super.findOne(FIND_BY_ID_QUERY, genreId);
     }
 
     public List<Rating> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        return super.findMany(FIND_ALL_QUERY);
     }
 
     public Optional<Rating> findByName(String name) {
-        return findOne(FIND_BY_GENRE_NAME_QUERY, name);
+        return super.findOne(FIND_BY_GENRE_NAME_QUERY, name);
     }
-
 }

@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.user.friendship;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,25 +22,25 @@ public class FriendshipDBStorage extends BaseRepository<Friendship> {
     }
 
     public List<Friendship> findAll() {
-        return findMany(FIND_ALL_QUERY);
+        return super.findMany(FIND_ALL_QUERY);
     }
 
     public Optional<Friendship> findById(Long userId, Long friendId) {
-        return findOne(FIND_BY_USER_AND_FRIEND, userId, friendId);
+        return super.findOne(FIND_BY_USER_AND_FRIEND, userId, friendId);
     }
 
     public Friendship add(Friendship friendship) {
         // Теперь не возвращаем ID, так как его нет
-        update(INSERT_QUERY, friendship.getUserId(), friendship.getFriendId(), friendship.getFriendshipStatusId());
+        super.update(INSERT_QUERY, friendship.getUserId(), friendship.getFriendId(), friendship.getFriendshipStatusId());
         return friendship;
     }
 
     public Friendship update(Friendship friendship) {
-        update(UPDATE_QUERY, friendship.getFriendshipStatusId(), friendship.getUserId(), friendship.getFriendId());
+        super.update(UPDATE_QUERY, friendship.getFriendshipStatusId(), friendship.getUserId(), friendship.getFriendId());
         return friendship;
     }
 
     public void delete(Long friendId) {
-        delete(DELETE_QUERY, friendId);
+        super.delete(DELETE_QUERY, friendId);
     }
 }

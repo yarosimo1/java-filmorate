@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.review;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,16 +35,16 @@ public class ReviewDBStorage extends BaseRepository<Review> implements ReviewSto
     }
 
     public Optional<Review> findById(long reviewId) {
-        return findOne(FIND_BY_ID_QUERY, reviewId);
+        return super.findOne(FIND_BY_ID_QUERY, reviewId);
     }
 
     public Collection<Review> findAll(int count) {
-        return findMany(FIND_ALL_QUERY, count);
+        return super.findMany(FIND_ALL_QUERY, count);
     }
 
     @Override
     public Review add(Review review) {
-        long id = insert(INSERT_QUERY, review.getContent(), review.getIsPositive(), review.getUserId(),
+        long id = super.insert(INSERT_QUERY, review.getContent(), review.getIsPositive(), review.getUserId(),
                 review.getFilmId(), review.getUseful());
         review.setReviewId(id);
         return review;
@@ -52,7 +52,7 @@ public class ReviewDBStorage extends BaseRepository<Review> implements ReviewSto
 
     @Override
     public Review update(Review updateReview) {
-        update(UPDATE_QUERY, updateReview.getContent(),
+        super.update(UPDATE_QUERY, updateReview.getContent(),
                 updateReview.getIsPositive(),
                 updateReview.getReviewId());
         return updateReview;
@@ -60,26 +60,26 @@ public class ReviewDBStorage extends BaseRepository<Review> implements ReviewSto
 
     @Override
     public void delete(Long id) {
-        delete(DELETE_QUERY, id);
+        super.delete(DELETE_QUERY, id);
     }
 
     @Override
     public void addReaction(Long reviewId, Long userId, boolean isLike) {
-        update(INSERT_REACTION_QUERY, reviewId, userId, isLike);
+        super.update(INSERT_REACTION_QUERY, reviewId, userId, isLike);
     }
 
     @Override
     public void removeReaction(Long reviewId, Long userId) {
-        update(REMOVE_REACTION_QUERY, reviewId, userId);
+        super.update(REMOVE_REACTION_QUERY, reviewId, userId);
     }
 
     @Override
     public void updateUseful(Long reviewId, int useful) {
-        update(UPDATE_REACTION_QUERY, useful, reviewId);
+        super.update(UPDATE_REACTION_QUERY, useful, reviewId);
     }
 
     public Collection<Review> getReviewsByFilm(Long filmId, int count) {
-        return findMany(FIND_BY_REVIEW_FILM_QUERY, filmId, count);
+        return super.findMany(FIND_BY_REVIEW_FILM_QUERY, filmId, count);
     }
 
     public Boolean getReaction(Long reviewId, Long userId) {

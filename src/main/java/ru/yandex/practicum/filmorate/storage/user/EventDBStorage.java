@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 
@@ -18,11 +19,11 @@ public class EventDBStorage extends BaseRepository<Event> {
     private static final String SELECT_EVENT = "SELECT * FROM EVENTS WHERE USER_ID = ?";
 
     public List<Event> findAll(long userId) {
-        return findMany(SELECT_EVENT, userId);
+        return super.findMany(SELECT_EVENT, userId);
     }
 
     public Event add(Event event) {
-        long id = insert(
+        long id = super.insert(
                 INSERT_EVENT,
                 event.getUserId(),
                 event.getEventType().toString(),
