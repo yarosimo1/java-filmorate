@@ -25,23 +25,30 @@ import java.util.Set;
 public class FilmUpdateDto {
     private Set<Long> likes = new HashSet<>();
     private Set<DirectorDto> directors = new HashSet<>();
+
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
+
     @NotNull
     private Set<GenreDto> genres = new HashSet<>();
+
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название не может быть пустым")
     private String name;
+
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Описание не может быть пустым")
     @Size(groups = {OnCreate.class, OnUpdate.class}, max = 200, message = "Максимальная длина описания — 200 символов")
     private String description;
+
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Дата релиза обязательна")
     @ReleaseDateConstraint(groups = {OnCreate.class, OnUpdate.class}, message = "Дата релиза — не раньше 28 декабря 1895 года")
     private LocalDate releaseDate;
+
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Продолжительность обязательна")
     @PositiveDuration(groups = {OnCreate.class, OnUpdate.class}, message = "Продолжительность фильма должна быть положительным числом")
     @JsonSerialize(using = DurationToSecondsSerializer.class)
     @JsonDeserialize(using = SecondsToDurationDeserializer.class)
     private Duration duration;
+
     @NotNull
     private RatingDto mpa;
 }

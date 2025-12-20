@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.mapper;
+package ru.yandex.practicum.filmorate.mapper.dtoMapper;
 
 import ru.yandex.practicum.filmorate.dto.event.EventCreateDto;
 import ru.yandex.practicum.filmorate.dto.event.EventDto;

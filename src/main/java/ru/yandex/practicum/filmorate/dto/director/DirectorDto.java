@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 public class DirectorDto {
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
+
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Имя не может быть пустым")
     private String name;
 }
