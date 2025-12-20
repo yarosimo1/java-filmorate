@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.model.EventMapper;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.storage.user.EventDBStorage;
+import ru.yandex.practicum.filmorate.storage.event.EventDBStorage;
 
 import java.util.List;
 
