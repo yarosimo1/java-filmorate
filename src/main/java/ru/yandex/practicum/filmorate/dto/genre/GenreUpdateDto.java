@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 public class GenreUpdateDto {
     @NotNull(groups = OnUpdate.class, message = "Id должен быть указан при обновлении")
     private Long id;
+
     @NotBlank(groups = {OnCreate.class, OnUpdate.class}, message = "Название жанра не может быть пустым")
     private String name;
 }

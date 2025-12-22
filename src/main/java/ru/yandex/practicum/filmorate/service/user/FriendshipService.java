@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.FriendshipDBStorage;
 import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.storage.user.friendship.FriendshipDBStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -23,20 +23,25 @@ public class FriendshipService {
     }
 
     public Friendship getFriendshipById(Long userId, Long friendId) {
-        return friendshipDBStorage.findById(userId, friendId).orElseThrow(() -> new NoSuchElementException("Дружбы не существует"));
+        return friendshipDBStorage.findById(userId, friendId)
+                .orElseThrow(() -> new NoSuchElementException("Дружбы не существует"));
     }
 
     public Friendship createFriendship(Friendship friendship) {
         log.info("Получен запрос на добавление дружбы {}", friendship);
         friendshipDBStorage.add(friendship);
-        log.info("Добавлена новая дружба: userId={}, friendId={}, friendshipStatusId={}", friendship.getUserId(), friendship.getFriendId(), friendship.getFriendshipStatusId());
+        log.info("Добавлена новая дружба: userId={}, friendId={}, friendshipStatusId={}",
+                friendship.getUserId(),
+                friendship.getFriendId(),
+                friendship.getFriendshipStatusId());
         return friendship;
     }
 
     public Friendship updateFriendship(Friendship newFriendship) {
         log.info("Получен запрос на обновление дружбы {}", newFriendship);
 
-        Friendship oldFriendship = friendshipDBStorage.findById(newFriendship.getUserId(), newFriendship.getFriendId()).orElseThrow(() -> new NoSuchElementException("Дружба не найдена"));
+        Friendship oldFriendship = friendshipDBStorage.findById(newFriendship.getUserId(), newFriendship.getFriendId())
+                .orElseThrow(() -> new NoSuchElementException("Дружба не найдена"));
 
         oldFriendship.setFriendshipStatusId(newFriendship.getFriendshipStatusId());
         friendshipDBStorage.update(oldFriendship);

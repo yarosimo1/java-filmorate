@@ -25,48 +25,49 @@ public class GlobalExceptionHandler {
 
         log.warn("Ошибка валидации: {}", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(errors));
+                .body(new ErrorResponse("MethodArgumentNotValid Error", errors));
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NoSuchElementException ex) {
         log.warn("Ошибка 404: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse("NoSuchElement Error", ex.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
         log.warn("Ошибка 404: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse("NotFound Error", ex.getMessage()));
     }
 
     @ExceptionHandler(DuplicatedDataException.class)
     public ResponseEntity<ErrorResponse> handleDuplicatedData(DuplicatedDataException ex) {
         log.warn("Ошибка 409: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse("DuplicatedData Error", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
         log.error("Неожиданная ошибка", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Произошла внутренняя ошибка сервера"));
+                .body(new ErrorResponse("Exception", "Произошла внутренняя ошибка сервера"));
     }
 
     @ExceptionHandler(InternalServerException.class)
     public ResponseEntity<ErrorResponse> handleInternalServer(InternalServerException ex) {
         log.error("Неожиданная ошибка", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Произошла внутренняя ошибка сервера"));
+                .body(new ErrorResponse("InternalServerException Error",
+                        "Произошла внутренняя ошибка сервера"));
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(ValidationException ex) {
         log.warn("Ошибка валидации: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(ex.getMessage()));
+                .body(new ErrorResponse("Validation Error", ex.getMessage()));
     }
 }

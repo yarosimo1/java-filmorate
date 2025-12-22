@@ -11,8 +11,10 @@ import ru.yandex.practicum.filmorate.validation.method.OnUpdate;
 public class Friendship {
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Id должен быть указан")
     private Long userId;
+
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Id должен быть указан")
     private Long friendId;
+
     @NotNull(groups = {OnCreate.class, OnUpdate.class}, message = "Id должен быть указан")
     private Long friendshipStatusId;
 }

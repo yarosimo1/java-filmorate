@@ -4,17 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.UserDBStorage;
+import ru.yandex.practicum.filmorate.dto.event.EventDto;
 import ru.yandex.practicum.filmorate.dto.user.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserUpdateDto;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.mapper.model.UserMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDBStorage;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +33,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserDBStorage userDBStorage;
     private final FriendshipService friendshipService;
+    private final EventService eventService;
 
     public Collection<UserDto> getUsers() {
         return userDBStorage.findAll().stream()
@@ -42,9 +48,12 @@ public class UserService {
         return UserMapper.mapToDto(user);
     }
 
+    public List<EventDto> getEvents(long userId) {
+        return eventService.getEventsByIdUser(userId);
+    }
+
     public UserDto postUser(UserCreateDto dto) {
         log.info("Добавление пользователя DTO={}", dto);
-
 
         userDBStorage.findByEmail(dto.getEmail()).ifPresent(u -> {
             throw new DuplicatedDataException("Этот email уже занят");
@@ -78,7 +87,6 @@ public class UserService {
         }
 
         User deleted = userDBStorage.delete(id);
-
         return UserMapper.mapToDto(deleted);
     }
 
@@ -94,6 +102,16 @@ public class UserService {
         User user = userDBStorage.findById(userId).get();
         User friend = userDBStorage.findById(friendId).get();
 
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType(EventType.FRIEND)
+                        .operation(Operation.ADD)
+                        .entityId(friendId)
+                        .build()
+        );
+
         return List.of(UserMapper.mapToDto(user), UserMapper.mapToDto(friend));
     }
 
@@ -104,9 +122,18 @@ public class UserService {
         friendshipService.deleteFriendship(userId, friendId);
 
         User user = userDBStorage.findById(userId).get();
+
+        eventService.addEventToUser(
+                Event.builder()
+                        .timestamp(Instant.now().toEpochMilli())
+                        .userId(userId)
+                        .eventType(EventType.FRIEND)
+                        .operation(Operation.REMOVE)
+                        .entityId(friendId)
+                        .build()
+        );
         return UserMapper.mapToDto(user);
     }
-
 
     public List<UserDto> getFriends(Long userId) {
 
@@ -116,8 +143,8 @@ public class UserService {
         Set<Long> friendIds = user.getFriendships();
 
         return friendIds.stream().map(id ->
-                userDBStorage.findById(id)
-                        .orElse(null))
+                        userDBStorage.findById(id)
+                                .orElse(null))
                 .filter(Objects::nonNull)
                 .map(UserMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -135,8 +162,7 @@ public class UserService {
     }
 
     private void validateUserIds(Long userId, Long otherId) {
-        if (userId == null || otherId == null || userId <= 0
-                || otherId <= 0 || Objects.equals(userId, otherId)) {
+        if (userId == null || otherId == null || Objects.equals(userId, otherId)) {
             throw new ValidationException("Некорректные ID");
         }
 

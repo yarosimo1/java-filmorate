@@ -2,12 +2,11 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.GenreDBStorage;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.mapper.model.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.film.genre.GenreDBStorage;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -17,13 +16,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GenreService {
-
-    @Qualifier("GenreDBStorage")
     private final GenreDBStorage genreDBStorage;
 
     public Collection<GenreDto> getGenres() {
         log.info("Получен запрос на получение всех жанров");
-        return genreDBStorage.findAll().stream().map(GenreMapper::mapToDto).collect(Collectors.toList());
+        return genreDBStorage.findAll()
+                .stream()
+                .map(GenreMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     public GenreDto getGenreById(Long id) {

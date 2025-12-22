@@ -8,11 +8,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import ru.yandex.practicum.filmorate.dal.FilmDBStorage;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.mapper.row.GenreRowMapper;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.film.FilmDBStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDBStorage;
+import ru.yandex.practicum.filmorate.storage.user.friendship.FriendshipDBStorage;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,8 +33,16 @@ class FilmDBStorageTests {
 
     private FilmDBStorage filmStorage;
 
+    private UserDBStorage userStorage;
+
+    private FriendshipDBStorage friendshipDBStorage;
+
+    private GenreRowMapper genreRowMapper;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
+        genreRowMapper = new GenreRowMapper();
+
         RowMapper<Film> mapper = (rs, rowNum) -> {
             Film film = new Film();
             film.setId(rs.getLong("FILM_ID"));
@@ -40,14 +50,35 @@ class FilmDBStorageTests {
             film.setDescription(rs.getString("DESCRIPTION"));
             film.setReleaseDate(rs.getDate("RELEAS_DATE").toLocalDate());
             film.setDuration(Duration.ofMinutes(rs.getInt("DURATION")));
-            // MPA и жанры можно оставить пустыми или подставить фиктивные
             return film;
         };
-        filmStorage = new FilmDBStorage(jdbcTemplate, mapper);
+        filmStorage = new FilmDBStorage(jdbcTemplate, mapper, genreRowMapper);
+
+        RowMapper<User> mapper1 = (rs, rowNum) -> {
+            User user = new User();
+            user.setId(rs.getLong("USER_ID"));
+            user.setEmail(rs.getString("EMAIL"));
+            user.setLogin(rs.getString("LOGIN"));
+            user.setName(rs.getString("NAME"));
+
+            Date birthday = rs.getDate("BIRTHDAY");
+            user.setBirthday(birthday.toLocalDate());
+            return user;
+        };
+        userStorage = new UserDBStorage(jdbcTemplate, mapper1);
+
+        RowMapper<Friendship> mapper2 = (rs, rowNum) -> {
+            return Friendship.builder()
+                    .userId(rs.getLong("USER_ID"))
+                    .friendId(rs.getLong("FRIEND_ID"))
+                    .friendshipStatusId(rs.getLong("FRIENDSHIP_STATUS_ID"))
+                    .build();
+        };
+        friendshipDBStorage = new FriendshipDBStorage(jdbcTemplate, mapper2);
     }
 
     @Test
-    void testAddFilm() {
+    public void testAddFilm() {
         Film film = createSampleFilm("Inception", 148, 1L, "G");
 
         Film savedFilm = filmStorage.add(film);
@@ -59,7 +90,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testFindById() {
+    public void testFindById() {
         Film film = createSampleFilm("Interstellar", 169, 2L, "PG-13");
         Film savedFilm = filmStorage.add(film);
 
@@ -71,7 +102,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         filmStorage.add(createSampleFilm("Film1", 90, 1L, "G"));
         filmStorage.add(createSampleFilm("Film2", 120, 2L, "PG-13"));
 
@@ -81,7 +112,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testUpdateFilm() {
+    public void testUpdateFilm() {
         Film film = createSampleFilm("Old Name", 100, 1L, "G");
         Film savedFilm = filmStorage.add(film);
 
@@ -96,7 +127,7 @@ class FilmDBStorageTests {
     }
 
     @Test
-    void testDeleteFilm() {
+    public void testDeleteFilm() {
         Film film = createSampleFilm("To be deleted", 110, 1L, "G");
         Film savedFilm = filmStorage.add(film);
 
@@ -133,5 +164,15 @@ class FilmDBStorageTests {
                 .id(id)
                 .name(name)
                 .build();
+    }
+
+    private User createSampleUser(String Login, String name, String email, LocalDate birthday) {
+        User user = new User();
+        user.setLogin(Login);
+        user.setName(name);
+        user.setEmail(email);
+        user.setBirthday(birthday);
+
+        return user;
     }
 }
